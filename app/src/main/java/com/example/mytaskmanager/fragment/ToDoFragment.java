@@ -1,9 +1,11 @@
 package com.example.mytaskmanager.fragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,15 +25,22 @@ import com.example.mytaskmanager.model.Task;
 import com.example.mytaskmanager.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.List;
 
 
 public class ToDoFragment extends Fragment {
 
+    public static final String TASK_DETAIL_FRAGMENT = "taskDetailFragment";
+    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
+
+
     private RecyclerView mRecyclerView;
     private FloatingActionButton mAddTask;
     private ImageView mEmptyImage;
     private TextView mEmptyText;
+
+    private Task mTask = new Task();
 
     public ToDoFragment() {
         // Required empty public constructor
@@ -90,13 +99,19 @@ public class ToDoFragment extends Fragment {
         mEmptyText = view.findViewById(R.id.empty_image_text);
     }
 
-    private void setListeners(){
+    private void setListeners() {
         mAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Task task = new Task();
-                //TODO
-                TaskRepository.getInstance().addTaskToDo(task);
+
+                TaskDetailFragment taskDetailFragment =
+                        TaskDetailFragment.newInstance(mTask, State.TODO);
+
+                taskDetailFragment.setTargetFragment(
+                        ToDoFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
+
+                taskDetailFragment.show(getFragmentManager(), TASK_DETAIL_FRAGMENT);
+
             }
         });
     }
@@ -116,21 +131,8 @@ public class ToDoFragment extends Fragment {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //TODO: DIALOG FRAGMENT
-//                    TaskDetailFragment taskDetailFragment =
-//                            TaskDetailFragment.newInstance();
-//
-//                    taskDetailFragment.setTargetFragment(
-//                            ToDoFragment.this, 0);
 
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
-
-                    TaskDetailFragment taskDetailFragment = TaskDetailFragment.newInstance();
-                    fragmentManager
-                            .beginTransaction()
-                            .replace(R.id.fragment_container, taskDetailFragment)
-                            .commit();
+                    //TODO: CREATE A TASK CHANGE FRAGMENT TO HANDLE DELETE, EDIT, AND SAVE.
 
                 }
             });
@@ -141,7 +143,8 @@ public class ToDoFragment extends Fragment {
             mTask = task;
             mTextViewTitle.setText(task.getTaskTitle());
             mTextViewDate.setText(task.getTaskDate().toString());
-            mTextViewIcon.setText("h");
+            if (task.getTaskTitle().length() != 0)
+                mTextViewIcon.setText(task.getTaskTitle().charAt(0)+"");
 
         }
     }
@@ -184,4 +187,20 @@ public class ToDoFragment extends Fragment {
             return mTasks.size();
         }
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null)
+            return;
+
+        if (requestCode == REQUEST_CODE_TASK_DETAIL_FRAGMENT) {
+            Task task =
+                    (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
+
+            TaskRepository.getInstance().addTaskToDo(task);
+        }
+
+    }
+
+
 }

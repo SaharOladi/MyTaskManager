@@ -31,17 +31,6 @@ public class TaskRepository implements Serializable {
         mTaskDone = new ArrayList<>();
         mTaskDoing = new ArrayList<>();
 
-        for (int i = 0; i < 5; i++) {
-            Task task = new Task();
-            task.setTaskTitle("task"+i);
-            task.setTaskDate(new Date());
-            task.setTaskDescription("task"+i+i);
-            task.setTaskState(State.TODO);
-
-
-            mTasks.add(task);
-            mTaskToDo.add(task);
-        }
     }
 
     public void insertTask(Task task) {
