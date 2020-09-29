@@ -131,13 +131,16 @@ public class LoginFragment extends Fragment {
                                 Toast.LENGTH_SHORT).show();
                     } else {
 
-                        ToDoFragment toDoFragment = ToDoFragment.
-                                newInstance();
+//                        ToDoFragment toDoFragment = ToDoFragment.
+//                                newInstance();
+
+
+                        DoneFragment doneFragment = DoneFragment.newInstance();
 
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                         fragmentManager.
                                 beginTransaction().
-                                replace(R.id.fragment_container, toDoFragment).
+                                replace(R.id.fragment_container, doneFragment).
                                 commit();
 
 //                        Intent intent = TaskPagerActivity.newIntent(getActivity(), user);
