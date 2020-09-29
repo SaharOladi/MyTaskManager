@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.fragment.TaskDetailFragment;
+import com.example.mytaskmanager.fragment.ToDoFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,11 +20,19 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
+//        if (fragment == null) {
+//            TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
+//            fragmentManager
+//                    .beginTransaction()
+//                    .add(R.id.fragment_container, taskDetailFragment)
+//                    .commit();
+//        }
+
         if (fragment == null) {
-            TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
+            ToDoFragment toDoFragment = new ToDoFragment();
             fragmentManager
                     .beginTransaction()
-                    .add(R.id.fragment_container, taskDetailFragment)
+                    .add(R.id.fragment_container, toDoFragment)
                     .commit();
         }
     }

@@ -4,24 +4,25 @@
     android:id="@+id/task_list_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.TaskListFragment">
+    tools:context=".fragment.ToDoFragment">
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/task_list_recyclerView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <ImageView
         android:id="@+id/empty_task_image_view"
-        android:layout_width="147dp"
-        android:layout_height="163dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_gravity="center"
         android:src="@drawable/ic_empty_tasks" />
 
     <TextView
+        android:id="@+id/empty_image_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

@@ -5,6 +5,7 @@ import com.example.mytaskmanager.model.Task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,18 @@ public class TaskRepository implements Serializable {
         mTaskToDo = new ArrayList<>();
         mTaskDone = new ArrayList<>();
         mTaskDoing = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            Task task = new Task();
+            task.setTaskTitle("task"+i);
+            task.setTaskDate(new Date());
+            task.setTaskDescription("task"+i+i);
+            task.setTaskState(State.TODO);
+
+
+            mTasks.add(task);
+            mTaskToDo.add(task);
+        }
     }
 
     public void insertTask(Task task) {
@@ -137,5 +150,9 @@ public class TaskRepository implements Serializable {
         findTask.setTaskDescription(task.getTaskDescription());
         findTask.setTaskDate(task.getTaskDate());
         findTask.setTaskState(task.getTaskState());
+    }
+
+    public List<Task> getTasks(){
+        return mTasks;
     }
 }
