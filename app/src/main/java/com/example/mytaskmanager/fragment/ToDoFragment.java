@@ -35,6 +35,7 @@ public class ToDoFragment extends Fragment {
     public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
 
 
+
     private RecyclerView mRecyclerView;
     private FloatingActionButton mAddTask;
     private ImageView mEmptyImage;
@@ -105,7 +106,7 @@ public class ToDoFragment extends Fragment {
             public void onClick(View view) {
 
                 TaskDetailFragment taskDetailFragment =
-                        TaskDetailFragment.newInstance(mTask, State.TODO);
+                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/ State.TODO);
 
                 taskDetailFragment.setTargetFragment(
                         ToDoFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
@@ -142,9 +143,9 @@ public class ToDoFragment extends Fragment {
 
             mTask = task;
             mTextViewTitle.setText(task.getTaskTitle());
-            mTextViewDate.setText(task.getTaskDate().toString());
+            mTextViewDate.setText(task.getJustDate()+ " " +task.getJustTime());
             if (task.getTaskTitle().length() != 0)
-                mTextViewIcon.setText(task.getTaskTitle().charAt(0)+"");
+                mTextViewIcon.setText(task.getTaskTitle().charAt(0) + "");
 
         }
     }
@@ -197,10 +198,10 @@ public class ToDoFragment extends Fragment {
             Task task =
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
+
             TaskRepository.getInstance().addTaskToDo(task);
         }
 
     }
-
 
 }

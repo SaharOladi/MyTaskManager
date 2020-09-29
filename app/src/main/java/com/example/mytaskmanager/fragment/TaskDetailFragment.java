@@ -25,9 +25,7 @@ import androidx.fragment.app.Fragment;
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
-import com.example.mytaskmanager.repository.TaskRepository;
 
-import java.util.Calendar;
 import java.util.Date;
 
 
@@ -35,23 +33,33 @@ public class TaskDetailFragment extends DialogFragment {
 
     public static final String ARGS_TASK_STATE = "tagTaskState";
     public static final String ARGS_TASK = "ARGS_TASK";
+    public static final String ARGS_DATE = "ARGS_DATE";
+
+    public static final int REQUEST_CODE_DATE_PICKER = 1;
+    public static final int REQUEST_CODE_TIME_PICKER = 2;
+
     public static final String EXTRA_TASK = "EXTRA_TASK";
+
+    public static final String TAG_DATE_PICKER_FRAGMENT = "TAG_DATE_PICKER_FRAGMENT";
+    public static final String TAG_TIME_PICKER_FRAGMENT = "TAG_TIME_PICKER_FRAGMENT";
+
+
+
     private EditText mTaskTitle, mTaskDescription;
     private Button mTaskDate, mTaskTime;
     private CheckBox mTaskState;
 
     private Task mTask;
-    private TaskRepository mTaskRepository;
-    private State mState;
 
     public TaskDetailFragment() {
         // Required empty public constructor
     }
 
-    public static TaskDetailFragment newInstance(Task task, State state) {
+    public static TaskDetailFragment newInstance(Task task,/** Date date,**/ State state) {
         TaskDetailFragment fragment = new TaskDetailFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARGS_TASK, task);
+//        args.putSerializable(ARGS_DATE, date);
         args.putSerializable(ARGS_TASK_STATE, state);
         fragment.setArguments(args);
         return fragment;
@@ -63,6 +71,7 @@ public class TaskDetailFragment extends DialogFragment {
 
         mTask = (Task) getArguments().getSerializable(ARGS_TASK);
         mTask.setTaskState((State) getArguments().getSerializable(ARGS_TASK_STATE));
+//        mTask.setTaskDate((Date) getArguments().getSerializable(ARGS_DATE));
 
     }
 
@@ -94,8 +103,7 @@ public class TaskDetailFragment extends DialogFragment {
     }
 
 
-
-    private void sendResult(Task task){
+    private void sendResult(Task task) {
 
         Fragment fragment = getTargetFragment();
         int requestCode = getTargetRequestCode();
@@ -107,7 +115,7 @@ public class TaskDetailFragment extends DialogFragment {
         fragment.onActivityResult(requestCode, resultCode, intent);
     }
 
-    private void findViews(View view){
+    private void findViews(View view) {
         mTaskTitle = view.findViewById(R.id.task_edit_text_title);
         mTaskDescription = view.findViewById(R.id.task_edit_text_description);
         mTaskDate = view.findViewById(R.id.task_button_date);
@@ -115,13 +123,13 @@ public class TaskDetailFragment extends DialogFragment {
         mTaskState = view.findViewById(R.id.task_checkbox_state);
     }
 
-    private void initViews(){
+    private void initViews() {
         mTaskDate.setText(mTask.getJustDate());
         mTaskTime.setText(mTask.getJustTime());
         mTaskState.setText(mTask.getTaskState().toString());
     }
 
-    private void setListeners(){
+    private void setListeners() {
         mTaskTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -139,9 +147,35 @@ public class TaskDetailFragment extends DialogFragment {
             }
         });
 
+        mTaskDescription.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                mTask.setTaskDescription(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         mTaskDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                DatePickerFragment datePickerFragment =
+                        DatePickerFragment.newInstance(mTask.getTaskDate());
+
+                datePickerFragment.setTargetFragment(
+                        TaskDetailFragment.this, REQUEST_CODE_DATE_PICKER);
+
+                datePickerFragment.show(
+                        getActivity().getSupportFragmentManager(), TAG_DATE_PICKER_FRAGMENT);
+
 
             }
         });
@@ -150,14 +184,54 @@ public class TaskDetailFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
 
+                TimePickerFragment timePickerFragment =
+                        TimePickerFragment.newInstance(mTask.getTaskDate());
+
+                timePickerFragment.setTargetFragment(
+                        TaskDetailFragment.this, REQUEST_CODE_TIME_PICKER);
+
+                timePickerFragment.show(
+                        getActivity().getSupportFragmentManager(), TAG_TIME_PICKER_FRAGMENT);
             }
         });
 
         mTaskState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
+                mTaskState.setEnabled(false);
             }
         });
+    }
+
+    private void updateTaskDate(Date userSelectedDate) {
+
+        mTask.setTaskDate(userSelectedDate);
+        mTaskDate.setText(mTask.getJustDate());
+    }
+
+    private void updateTaskTime(Date userSelectedTime) {
+
+        mTask.setTaskDate(userSelectedTime);
+        mTaskTime.setText(mTask.getJustTime());
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (resultCode != Activity.RESULT_OK || data == null)
+            return;
+
+        if (requestCode == REQUEST_CODE_DATE_PICKER) {
+            Date userSelectedDate =
+                    (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_USER_SELECTED_DATE);
+
+            updateTaskDate(userSelectedDate);
+        }
+
+        if (requestCode == REQUEST_CODE_TIME_PICKER) {
+            Date userSelectedTime =
+                    (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_USER_SELECTED_TIME);
+
+            updateTaskTime(userSelectedTime);
+        }
     }
 }

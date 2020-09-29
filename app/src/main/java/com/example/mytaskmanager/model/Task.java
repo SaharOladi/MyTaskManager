@@ -72,4 +72,5 @@ public class Task implements Serializable {
         mFormat = new SimpleDateFormat("hh:mm a");
         return mFormat.format(mTaskDate);
     }
+
 }

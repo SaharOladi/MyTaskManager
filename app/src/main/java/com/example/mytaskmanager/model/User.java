@@ -1,9 +1,10 @@
 package com.example.mytaskmanager.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class User {
+public class User implements Serializable {
 
     private UUID   mUserID;
     private String mUserName;
@@ -13,6 +14,11 @@ public class User {
     public User() {
         mUserID = UUID.randomUUID();
         mUserLoginDate = new Date();
+    }
+
+    public User(String userName, String userPassword) {
+        mUserName = userName;
+        mUserPassword = userPassword;
     }
 
     public UUID getUserID() {
