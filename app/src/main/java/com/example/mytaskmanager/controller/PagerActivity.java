@@ -25,7 +25,6 @@ import com.example.mytaskmanager.fragment.ToDoFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.Date;
 
 public class PagerActivity extends AppCompatActivity {
 
@@ -149,9 +148,7 @@ public class PagerActivity extends AppCompatActivity {
                 //TODO
                 return true;
             default:
-                return super.
-
-                        onOptionsItemSelected(item);
+                return super.onOptionsItemSelected(item);
 
         }
     }

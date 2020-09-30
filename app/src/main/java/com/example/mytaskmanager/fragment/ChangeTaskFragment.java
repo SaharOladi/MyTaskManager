@@ -43,8 +43,7 @@ public class ChangeTaskFragment extends DialogFragment {
     public static final int RESULT_CODE_DELETE_TASK = 2;
 
     private EditText mTaskTitle, mTaskDescription;
-    private Button mTaskDate, mTaskTime /**,mTaskSave, mTaskEdit, mTaskDelete**/
-            ;
+    private Button mTaskDate, mTaskTime /**,mTaskSave, mTaskEdit, mTaskDelete**/;
 
     private Task mTask;
 
@@ -81,13 +80,8 @@ public class ChangeTaskFragment extends DialogFragment {
         setListeners();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
-                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sendResult(mTask);
-                    }
-                })
-                .setNeutralButton("Edit", new DialogInterface.OnClickListener() {
+
+                .setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         sendResult(mTask);

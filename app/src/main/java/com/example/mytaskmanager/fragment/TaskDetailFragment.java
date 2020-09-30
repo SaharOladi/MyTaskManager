@@ -121,6 +121,7 @@ public class TaskDetailFragment extends DialogFragment {
         mTaskDate = view.findViewById(R.id.task_button_date);
         mTaskTime = view.findViewById(R.id.task_button_time);
         mTaskState = view.findViewById(R.id.task_checkbox_state);
+        mTaskState.setEnabled(false);
     }
 
     private void initViews() {
@@ -198,7 +199,7 @@ public class TaskDetailFragment extends DialogFragment {
         mTaskState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mTaskState.setEnabled(false);
+//                mTaskState.setEnabled(false);
             }
         });
     }
