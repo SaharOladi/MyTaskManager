@@ -37,6 +37,7 @@ public class DoingFragment extends Fragment {
 
 
     private RecyclerView mRecyclerView;
+    private TaskAdapter mTaskAdapter;
     private FloatingActionButton mAddTask;
     private ImageView mEmptyImage;
     private TextView mEmptyText;
@@ -79,13 +80,18 @@ public class DoingFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         TaskRepository taskRepository = TaskRepository.getInstance();
-        List<Task> tasks = taskRepository.getTasksList(State.DONE);
+        List<Task> tasks = taskRepository.getTasksList(State.DOING);
 
         if (tasks.size() != 0) {
             mEmptyImage.setVisibility(View.GONE);
             mEmptyText.setVisibility(View.GONE);
-            TaskAdapter taskAdapter = new TaskAdapter(tasks);
-            mRecyclerView.setAdapter(taskAdapter);
+            if (mTaskAdapter == null) {
+                mTaskAdapter = new TaskAdapter(tasks);
+                mRecyclerView.setAdapter(mTaskAdapter);
+            } else {
+                mTaskAdapter.setTasks(tasks);
+                mTaskAdapter.notifyDataSetChanged();
+            }
         } else {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);
@@ -199,7 +205,8 @@ public class DoingFragment extends Fragment {
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
 
-            TaskRepository.getInstance().addTaskDone(task);
+            TaskRepository.getInstance().addTaskDoing(task);
+
         }
 
     }

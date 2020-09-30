@@ -37,6 +37,7 @@ public class ToDoFragment extends Fragment {
 
 
     private RecyclerView mRecyclerView;
+    private TaskAdapter mTaskAdapter;
     private FloatingActionButton mAddTask;
     private ImageView mEmptyImage;
     private TextView mEmptyText;
@@ -84,8 +85,13 @@ public class ToDoFragment extends Fragment {
         if (tasks.size() != 0) {
             mEmptyImage.setVisibility(View.GONE);
             mEmptyText.setVisibility(View.GONE);
-            TaskAdapter taskAdapter = new TaskAdapter(tasks);
-            mRecyclerView.setAdapter(taskAdapter);
+            if (mTaskAdapter == null) {
+                mTaskAdapter = new TaskAdapter(tasks);
+                mRecyclerView.setAdapter(mTaskAdapter);
+            } else {
+                mTaskAdapter.setTasks(tasks);
+                mTaskAdapter.notifyDataSetChanged();
+            }
         } else {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);

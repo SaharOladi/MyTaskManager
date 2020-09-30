@@ -2,6 +2,7 @@ package com.example.mytaskmanager.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.mytaskmanager.R;
+import com.example.mytaskmanager.controller.PagerActivity;
 import com.example.mytaskmanager.model.User;
 
 public class LoginFragment extends Fragment {
@@ -133,15 +135,15 @@ public class LoginFragment extends Fragment {
 
 //                        ToDoFragment toDoFragment = ToDoFragment.
 //                                newInstance();
-
-
-                        DoneFragment doneFragment = DoneFragment.newInstance();
-
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        fragmentManager.
-                                beginTransaction().
-                                replace(R.id.fragment_container, doneFragment).
-                                commit();
+                        Intent intent = PagerActivity.newIntent(getActivity());
+                        startActivity(intent);
+//                        DoneFragment doneFragment = DoneFragment.newInstance();
+//
+//                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//                        fragmentManager.
+//                                beginTransaction().
+//                                replace(R.id.fragment_container, doneFragment).
+//                                commit();
 
 //                        Intent intent = TaskPagerActivity.newIntent(getActivity(), user);
 //                        startActivity(intent);
