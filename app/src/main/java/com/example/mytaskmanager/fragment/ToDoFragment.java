@@ -87,8 +87,10 @@ public class ToDoFragment extends Fragment {
         List<Task> tasks = taskRepository.getTasksList(State.TODO);
 
         if (tasks.size() != 0) {
+
             mEmptyImage.setVisibility(View.GONE);
             mEmptyText.setVisibility(View.GONE);
+
             if (mTaskAdapter == null) {
                 mTaskAdapter = new TaskAdapter(tasks);
                 mRecyclerView.setAdapter(mTaskAdapter);
@@ -220,11 +222,11 @@ public class ToDoFragment extends Fragment {
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
 
             switch (resultCode) {
-                case 1:
+                case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
                     TaskRepository.getInstance().updateTask(task);
                     break;
-                case 2:
+                case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
                     UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
                     TaskRepository.getInstance().removeSingleTask(uuid);
                     break;

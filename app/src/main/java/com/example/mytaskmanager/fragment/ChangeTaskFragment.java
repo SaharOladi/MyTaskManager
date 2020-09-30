@@ -37,7 +37,10 @@ public class ChangeTaskFragment extends DialogFragment {
     public static final String TAG_TIME_PICKER_FRAGMENT_CHANGE_TASK = "TAG_TIME_PICKER_FRAGMENT";
 
     public static final String EXTRA_TASK_CHANGE = "com.example.mytaskmanager.EXTRA_TASK_CHANGE";
-    public static final String EXTRA_TASK_CHANGE_DELETE = "EXTRA_TASK_CHANGE_DELETE";
+    public static final String EXTRA_TASK_CHANGE_DELETE = "com.example.mytaskmanager.EXTRA_TASK_CHANGE_DELETE";
+
+    public static final int RESULT_CODE_EDIT_TASK = 1;
+    public static final int RESULT_CODE_DELETE_TASK = 2;
 
     private EditText mTaskTitle, mTaskDescription;
     private Button mTaskDate, mTaskTime /**,mTaskSave, mTaskEdit, mTaskDelete**/
@@ -219,7 +222,7 @@ public class ChangeTaskFragment extends DialogFragment {
 
         Fragment fragment = getTargetFragment();
         int requestCode = getTargetRequestCode();
-        int resultCode = 1;
+        int resultCode = RESULT_CODE_EDIT_TASK;
 
         Intent intent = new Intent();
         intent.putExtra(EXTRA_TASK_CHANGE, task);
@@ -231,7 +234,7 @@ public class ChangeTaskFragment extends DialogFragment {
 
         Fragment fragment = getTargetFragment();
         int requestCode = getTargetRequestCode();
-        int resultCode = 2;
+        int resultCode = RESULT_CODE_DELETE_TASK;
 
         Intent intent = new Intent();
         intent.putExtra(EXTRA_TASK_CHANGE_DELETE, taskId);
