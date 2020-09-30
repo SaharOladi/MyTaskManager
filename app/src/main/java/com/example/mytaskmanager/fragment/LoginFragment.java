@@ -88,7 +88,7 @@ public class LoginFragment extends Fragment {
                 if (!mUserName.getText().toString().isEmpty() && !mPassword.getText().toString().isEmpty()) {
                     user.setUserName(mUserName.getText().toString());
                     user.setUserPassword(mPassword.getText().toString());
-//                    mUsers[mCurrentIndex] = user;
+                    mUsers[mCurrentIndex] = user;
 
                     SignUpFragment signUpFragment = SignUpFragment.
                             newInstance(user, mUsers, mCurrentIndex);
@@ -111,7 +111,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 boolean isLogIn = false;
-                User user = new User();
+//                User user = new User();
 
                 if (mUserName.getText().toString().isEmpty() || mPassword.getText().toString().isEmpty()) {
                     Toast.makeText(getActivity(),
@@ -122,7 +122,7 @@ public class LoginFragment extends Fragment {
                     for (int i = 0; i < mCurrentIndex; i++) {
                         if (mUsers[i].getUserName().equals(mUserName.getText().toString()) &&
                                 mUsers[i].getUserPassword().equals(mPassword.getText().toString())) {
-                            user = mUsers[i];
+//                            user = mUsers[i];
                             isLogIn = true;
                             break out;
                         }
@@ -132,21 +132,8 @@ public class LoginFragment extends Fragment {
                                 "You Should Sign Up First",
                                 Toast.LENGTH_SHORT).show();
                     } else {
-
-//                        ToDoFragment toDoFragment = ToDoFragment.
-//                                newInstance();
                         Intent intent = PagerActivity.newIntent(getActivity());
                         startActivity(intent);
-//                        DoneFragment doneFragment = DoneFragment.newInstance();
-//
-//                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//                        fragmentManager.
-//                                beginTransaction().
-//                                replace(R.id.fragment_container, doneFragment).
-//                                commit();
-
-//                        Intent intent = TaskPagerActivity.newIntent(getActivity(), user);
-//                        startActivity(intent);
                     }
 
                 }

@@ -16,7 +16,7 @@ import com.example.mytaskmanager.fragment.ToDoFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static Intent newIntent(Context context){
+    public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
 
         return intent;
@@ -30,21 +30,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.fragment_container);
 
-//        if (fragment == null) {
-//            TaskDetailFragment taskDetailFragment = new TaskDetailFragment();
-//            fragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.fragment_container, taskDetailFragment)
-//                    .commit();
-//        }
-
-//        if (fragment == null) {
-//            ToDoFragment toDoFragment = new ToDoFragment();
-//            fragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.fragment_container, toDoFragment)
-//                    .commit();
-//        }
 
         if (fragment == null) {
             LoginFragment loginFragment = new LoginFragment();
@@ -53,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, loginFragment)
                     .commit();
         }
-
 
     }
 }

@@ -27,13 +27,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 
 public class ToDoFragment extends Fragment {
 
     public static final String TASK_DETAIL_FRAGMENT = "taskDetailFragment";
-    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
+    public static final String CHANGE_TASK_FRAGMENT = "changeTaskFragment";
 
+
+    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
+    public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 4;
 
 
     private RecyclerView mRecyclerView;
@@ -112,7 +116,7 @@ public class ToDoFragment extends Fragment {
             public void onClick(View view) {
 
                 TaskDetailFragment taskDetailFragment =
-                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/ State.TODO);
+                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/State.TODO);
 
                 taskDetailFragment.setTargetFragment(
                         ToDoFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
@@ -139,7 +143,12 @@ public class ToDoFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
 
-                    //TODO: CREATE A TASK CHANGE FRAGMENT TO HANDLE DELETE, EDIT, AND SAVE.
+                    ChangeTaskFragment changeTaskFragment = ChangeTaskFragment.newInstance(mTask);
+
+                    changeTaskFragment.setTargetFragment(
+                            ToDoFragment.this, REQUEST_CODE_CHANGE_TASK_FRAGMENT);
+
+                    changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
 
                 }
             });
@@ -149,7 +158,7 @@ public class ToDoFragment extends Fragment {
 
             mTask = task;
             mTextViewTitle.setText(task.getTaskTitle());
-            mTextViewDate.setText(task.getJustDate()+ " " +task.getJustTime());
+            mTextViewDate.setText(task.getJustDate() + " " + task.getJustTime());
             if (task.getTaskTitle().length() != 0)
                 mTextViewIcon.setText(task.getTaskTitle().charAt(0) + "");
 
@@ -197,7 +206,7 @@ public class ToDoFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null)
+        if (/**(resultCode != 1  && requestCode != 2 && resultCode != Activity.RESULT_OK) ||**/data == null)
             return;
 
         if (requestCode == REQUEST_CODE_TASK_DETAIL_FRAGMENT) {
@@ -208,6 +217,22 @@ public class ToDoFragment extends Fragment {
             TaskRepository.getInstance().addTaskToDo(task);
         }
 
-    }
+        if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
 
+            switch (resultCode) {
+                case 1:
+                    Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
+                    TaskRepository.getInstance().updateTask(task);
+                    break;
+                case 2:
+                    UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
+                    TaskRepository.getInstance().removeSingleTask(uuid);
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+    }
 }

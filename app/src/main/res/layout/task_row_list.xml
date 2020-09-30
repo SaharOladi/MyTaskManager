@@ -21,7 +21,9 @@
         android:id="@+id/task_item_image_view"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:paddingLeft="8dp"
+        android:background="#1EE5DE"
+        android:gravity="center"
+        android:padding="4dp"
         android:src="@drawable/ic_task_icon" />
 
     <TextView
@@ -31,6 +33,7 @@
         android:layout_below="@id/task_item_image_view"
         android:layout_marginTop="0dp"
         android:paddingLeft="8dp"
+        android:paddingTop="3dp"
         android:textColor="#000000"
         android:textSize="12sp"
         tools:text="Date" />

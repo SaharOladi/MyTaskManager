@@ -10,4 +10,7 @@
     <string name="text_sign_up">Sign up</string>
     <string name="button_sign_up">Sign up</string>
     <string name="text_recycler_view">The list Task is empty, please click on add button</string>
+    <string name="save">Save</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>
