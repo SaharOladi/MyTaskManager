@@ -26,6 +26,8 @@ import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -199,7 +201,7 @@ public class TaskDetailFragment extends DialogFragment {
         mTaskState.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-//                mTaskState.setEnabled(false);
+                //TODO
             }
         });
     }
@@ -232,7 +234,10 @@ public class TaskDetailFragment extends DialogFragment {
             Date userSelectedTime =
                     (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_USER_SELECTED_TIME);
 
+
+
             updateTaskTime(userSelectedTime);
         }
     }
+
 }

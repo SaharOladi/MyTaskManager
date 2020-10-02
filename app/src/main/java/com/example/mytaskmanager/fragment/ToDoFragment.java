@@ -81,6 +81,11 @@ public class ToDoFragment extends Fragment {
         TaskRepository taskRepository = TaskRepository.getInstance();
         List<Task> tasks = taskRepository.getTasksList(State.TODO);
 
+        updateUI(tasks);
+
+    }
+
+    private void updateUI(List<Task> tasks) {
         if (tasks.size() != 0) {
 
             mEmptyImage.setVisibility(View.GONE);
@@ -97,7 +102,6 @@ public class ToDoFragment extends Fragment {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void findViews(View view) {
@@ -212,6 +216,7 @@ public class ToDoFragment extends Fragment {
 
 
             TaskRepository.getInstance().addTaskToDo(task);
+            updateUI(TaskRepository.getInstance().getTasksList(State.TODO));
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
@@ -220,10 +225,12 @@ public class ToDoFragment extends Fragment {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
                     TaskRepository.getInstance().updateTask(task);
+                    updateEditUI();
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
                     UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
                     TaskRepository.getInstance().removeSingleTask(uuid);
+                    updateEditUI();
                     break;
                 default:
                     break;
@@ -231,5 +238,10 @@ public class ToDoFragment extends Fragment {
 
         }
 
+    }
+
+    public void updateEditUI() {
+        if (mTaskAdapter != null)
+            mTaskAdapter.notifyDataSetChanged();
     }
 }

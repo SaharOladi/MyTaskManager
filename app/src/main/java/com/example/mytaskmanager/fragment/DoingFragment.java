@@ -1,6 +1,5 @@
 package com.example.mytaskmanager.fragment;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -23,13 +22,17 @@ import com.example.mytaskmanager.repository.TaskRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.UUID;
 
 
 public class DoingFragment extends Fragment {
 
     public static final String TASK_DETAIL_FRAGMENT = "taskDetailFragment";
-    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
+    public static final String CHANGE_TASK_FRAGMENT = "changeTaskFragment";
 
+
+    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
+    public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 4;
 
 
     private RecyclerView mRecyclerView;
@@ -78,9 +81,16 @@ public class DoingFragment extends Fragment {
         TaskRepository taskRepository = TaskRepository.getInstance();
         List<Task> tasks = taskRepository.getTasksList(State.DOING);
 
+        updateUI(tasks);
+
+    }
+
+    private void updateUI(List<Task> tasks) {
         if (tasks.size() != 0) {
+
             mEmptyImage.setVisibility(View.GONE);
             mEmptyText.setVisibility(View.GONE);
+
             if (mTaskAdapter == null) {
                 mTaskAdapter = new TaskAdapter(tasks);
                 mRecyclerView.setAdapter(mTaskAdapter);
@@ -92,7 +102,6 @@ public class DoingFragment extends Fragment {
             mEmptyImage.setVisibility(View.VISIBLE);
             mEmptyText.setVisibility(View.VISIBLE);
         }
-
     }
 
     private void findViews(View view) {
@@ -108,7 +117,7 @@ public class DoingFragment extends Fragment {
             public void onClick(View view) {
 
                 TaskDetailFragment taskDetailFragment =
-                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/ State.DOING);
+                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/State.DONE);
 
                 taskDetailFragment.setTargetFragment(
                         DoingFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
@@ -135,7 +144,12 @@ public class DoingFragment extends Fragment {
                 @Override
                 public void onClick(View view) {
 
-                    //TODO: CREATE A TASK CHANGE FRAGMENT TO HANDLE DELETE, EDIT, AND SAVE.
+                    ChangeTaskFragment changeTaskFragment = ChangeTaskFragment.newInstance(mTask);
+
+                    changeTaskFragment.setTargetFragment(
+                            DoingFragment.this, REQUEST_CODE_CHANGE_TASK_FRAGMENT);
+
+                    changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
 
                 }
             });
@@ -145,7 +159,7 @@ public class DoingFragment extends Fragment {
 
             mTask = task;
             mTextViewTitle.setText(task.getTaskTitle());
-            mTextViewDate.setText(task.getJustDate()+ " " +task.getJustTime());
+            mTextViewDate.setText(task.getJustDate() + " " + task.getJustTime());
             if (task.getTaskTitle().length() != 0)
                 mTextViewIcon.setText(task.getTaskTitle().charAt(0) + "");
 
@@ -193,7 +207,7 @@ public class DoingFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null)
+        if (/**(resultCode != 1  && requestCode != 2 && resultCode != Activity.RESULT_OK) ||**/data == null)
             return;
 
         if (requestCode == REQUEST_CODE_TASK_DETAIL_FRAGMENT) {
@@ -202,9 +216,32 @@ public class DoingFragment extends Fragment {
 
 
             TaskRepository.getInstance().addTaskDoing(task);
+            updateUI(TaskRepository.getInstance().getTasksList(State.DOING));
+        }
+
+        if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
+
+            switch (resultCode) {
+                case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
+                    Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
+                    TaskRepository.getInstance().updateTask(task);
+                    updateEditUI();
+                    break;
+                case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
+                    UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
+                    TaskRepository.getInstance().removeSingleTask(uuid);
+                    updateEditUI();
+                    break;
+                default:
+                    break;
+            }
 
         }
 
     }
 
+    public void updateEditUI() {
+        if (mTaskAdapter != null)
+            mTaskAdapter.notifyDataSetChanged();
+    }
 }
