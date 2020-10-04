@@ -26,6 +26,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 
+
 public class PagerActivity extends AppCompatActivity {
 
     private TabLayout mTabLayout;
@@ -46,6 +47,7 @@ public class PagerActivity extends AppCompatActivity {
         findViews();
         initView();
     }
+
 
     private void findViews() {
         mViewPager = findViewById(R.id.viewPager);
@@ -79,7 +81,9 @@ public class PagerActivity extends AppCompatActivity {
 
         tabLayoutMediator.attach();
 
+
     }
+
 
     private class PageAdapter extends FragmentStateAdapter {
 
@@ -151,5 +155,17 @@ public class PagerActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPageAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPageAdapter.notifyDataSetChanged();
     }
 }

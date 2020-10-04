@@ -6,23 +6,27 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import com.example.mytaskmanager.R;
+import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
+import com.example.mytaskmanager.repository.TaskRepository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -43,7 +47,9 @@ public class ChangeTaskFragment extends DialogFragment {
     public static final int RESULT_CODE_DELETE_TASK = 2;
 
     private EditText mTaskTitle, mTaskDescription;
-    private Button mTaskDate, mTaskTime /**,mTaskSave, mTaskEdit, mTaskDelete**/;
+    private Button mTaskDate, mTaskTime;
+    private RadioButton mRadioButtonToDo, mRadioButtonDone, mRadioButtonDoing;
+    private RadioGroup mRadioGroupState;
 
     private Task mTask;
 
@@ -110,6 +116,10 @@ public class ChangeTaskFragment extends DialogFragment {
         mTaskDescription = view.findViewById(R.id.change_task_description);
         mTaskDate = view.findViewById(R.id.change_task_date);
         mTaskTime = view.findViewById(R.id.change_task_time);
+        mRadioGroupState = view.findViewById(R.id.radioGroup_taskState);
+        mRadioButtonToDo = view.findViewById(R.id.radioButton_todo);
+        mRadioButtonDoing = view.findViewById(R.id.radioButton_doing);
+        mRadioButtonDone = view.findViewById(R.id.radioButton_done);
     }
 
     private void setListeners() {
@@ -177,6 +187,73 @@ public class ChangeTaskFragment extends DialogFragment {
                         getActivity().getSupportFragmentManager(), TAG_TIME_PICKER_FRAGMENT_CHANGE_TASK);
             }
         });
+
+        mRadioGroupState.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+                updateTaskState(mTask.getTaskID());
+
+                if (checkedId == mRadioButtonToDo.getId()) {
+                    mRadioButtonToDo.setChecked(true);
+
+                    Task task = new Task();
+                    task.setTaskState(State.TODO);
+                    task.setTaskTitle(mTask.getTaskTitle());
+                    task.setTaskDescription(mTask.getTaskDescription());
+                    task.setTaskDate(mTask.getTaskDate());
+                    task.setTaskTime(mTask.getTaskDate());
+
+                    TaskRepository.getInstance().addTaskToDo(task);
+                    TaskRepository.getInstance().getTasks();
+
+                } else if (checkedId == mRadioButtonDoing.getId()) {
+                    mRadioButtonDoing.setChecked(true);
+
+
+                    Task task = new Task();
+                    task.setTaskState(State.DOING);
+                    task.setTaskTitle(mTask.getTaskTitle());
+                    task.setTaskDescription(mTask.getTaskDescription());
+                    task.setTaskDate(mTask.getTaskDate());
+                    task.setTaskTime(mTask.getTaskDate());
+
+                    TaskRepository.getInstance().addTaskDoing(task);
+                    TaskRepository.getInstance().getTasks();
+
+                } else {
+                    mRadioButtonDone.setChecked(true);
+
+                    Task task = new Task();
+                    task.setTaskState(State.DONE);
+                    task.setTaskTitle(mTask.getTaskTitle());
+                    task.setTaskDescription(mTask.getTaskDescription());
+                    task.setTaskDate(mTask.getTaskDate());
+                    task.setTaskTime(mTask.getTaskDate());
+
+                    TaskRepository.getInstance().addTaskDone(task);
+                    TaskRepository.getInstance().getTasks();
+                }
+
+                TaskRepository.getInstance().getTasks();
+
+            }
+        });
+    }
+
+    private void updateTaskState(UUID taskID) {
+        TaskRepository.getInstance().removeSingleTask(taskID);
+    }
+
+    private void updateUI() {
+        if (getTargetFragment() instanceof ToDoFragment)
+            ((ToDoFragment) getTargetFragment()).updateEditUI();
+
+        else if (getTargetFragment() instanceof DoingFragment)
+            ((DoingFragment) getTargetFragment()).updateEditUI();
+
+        else
+            ((DoneFragment) getTargetFragment()).updateEditUI();
     }
 
 
@@ -188,7 +265,7 @@ public class ChangeTaskFragment extends DialogFragment {
 
     private void updateTaskTime(Date userSelectedTime) {
 
-        mTask.setTaskDate(userSelectedTime);
+        mTask.setTaskTime(userSelectedTime);
         mTaskTime.setText(mTask.getJustTime());
     }
 

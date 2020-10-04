@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.MultiTapKeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -25,10 +26,13 @@ import androidx.fragment.app.Fragment;
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
+import com.example.mytaskmanager.repository.TaskRepository;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.SimpleFormatter;
 
 
 public class TaskDetailFragment extends DialogFragment {
@@ -67,13 +71,13 @@ public class TaskDetailFragment extends DialogFragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mTask = (Task) getArguments().getSerializable(ARGS_TASK);
         mTask.setTaskState((State) getArguments().getSerializable(ARGS_TASK_STATE));
-//        mTask.setTaskDate((Date) getArguments().getSerializable(ARGS_DATE));
 
     }
 
@@ -94,7 +98,14 @@ public class TaskDetailFragment extends DialogFragment {
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        sendResult(mTask);
+                        Task task = new Task();
+                        task.setTaskTitle(mTask.getTaskTitle());
+                        task.setTaskDate(mTask.getTaskDate());
+                        task.setTaskDescription(mTask.getTaskDescription());
+                        task.setTaskState(mTask.getTaskState());
+                        task.setTaskTime(mTask.getTaskDate());
+                        TaskRepository.getInstance().removeSingleTask(mTask.getTaskID());
+                        sendResult(task);
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -214,7 +225,7 @@ public class TaskDetailFragment extends DialogFragment {
 
     private void updateTaskTime(Date userSelectedTime) {
 
-        mTask.setTaskDate(userSelectedTime);
+        mTask.setTaskTime(userSelectedTime);
         mTaskTime.setText(mTask.getJustTime());
     }
 

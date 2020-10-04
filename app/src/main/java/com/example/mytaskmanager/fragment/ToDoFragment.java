@@ -214,9 +214,9 @@ public class ToDoFragment extends Fragment {
             Task task =
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
-
             TaskRepository.getInstance().addTaskToDo(task);
-            updateUI(TaskRepository.getInstance().getTasksList(State.TODO));
+            TaskRepository.getInstance().updateTask(task);
+            updateUI(TaskRepository.getInstance().getTasksList(task.getTaskState()));
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
@@ -225,6 +225,7 @@ public class ToDoFragment extends Fragment {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
                     TaskRepository.getInstance().updateTask(task);
+//                    updateUI(TaskRepository.getInstance().getTasks());
                     updateEditUI();
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
@@ -243,5 +244,17 @@ public class ToDoFragment extends Fragment {
     public void updateEditUI() {
         if (mTaskAdapter != null)
             mTaskAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        updateEditUI();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateEditUI();
     }
 }

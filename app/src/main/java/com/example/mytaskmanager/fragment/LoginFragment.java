@@ -89,8 +89,7 @@ public class LoginFragment extends Fragment {
                     user.setUserPassword(mPassword.getText().toString());
                     mUsers[mCurrentIndex] = user;
 
-                    SignUpFragment signUpFragment = SignUpFragment.
-                            newInstance(user, mUsers, mCurrentIndex);
+                    SignUpFragment signUpFragment = SignUpFragment.newInstance(user, mUsers, mCurrentIndex);
 
                     signUpFragment.setTargetFragment(
                             LoginFragment.this,

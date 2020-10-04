@@ -67,6 +67,8 @@ public class TaskRepository implements Serializable {
         mTasks.add(task);
     }
 
+
+
     public void removeSingleTask(UUID taskId) {
         for (Task task:mTaskToDo) {
             if (task.getTaskID().equals(taskId)) {
@@ -139,6 +141,9 @@ public class TaskRepository implements Serializable {
         findTask.setTaskDescription(task.getTaskDescription());
         findTask.setTaskDate(task.getTaskDate());
         findTask.setTaskState(task.getTaskState());
+
+        insertTask(findTask);
+        removeSingleTask(task.getTaskID());
     }
 
     public List<Task> getTasks(){

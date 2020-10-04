@@ -95,6 +95,7 @@ public class TimePickerFragment extends DialogFragment {
 
     private void initViews() {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mTaskTime);
 
         if (Build.VERSION.SDK_INT < 23) {
             mTimePicker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));

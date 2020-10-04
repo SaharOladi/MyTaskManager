@@ -1,8 +1,11 @@
 package com.example.mytaskmanager.model;
 
 import java.io.Serializable;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.UUID;
 
 public class Task implements Serializable {
@@ -12,6 +15,8 @@ public class Task implements Serializable {
     private String mTaskDescription;
     private State  mTaskState;
     private Date   mTaskDate;
+
+
     private SimpleDateFormat mFormat;
 
     public Task() {
@@ -52,8 +57,27 @@ public class Task implements Serializable {
     }
 
     public void setTaskDate(Date taskDate) {
-        mTaskDate = taskDate;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(taskDate);
+
+        int year = calendar.get(Calendar.YEAR);
+        int monthOfYear = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+        calendar.set(year, monthOfYear, dayOfMonth, mTaskDate.getHours(), mTaskDate.getMinutes(), mTaskDate.getSeconds());
+
+//        GregorianCalendar gregorianCalendar = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+
+        mTaskDate = calendar.getTime();
     }
+
+    public void setTaskTime(Date taskTime){
+        mTaskDate.setHours(taskTime.getHours());
+        mTaskDate.setMinutes(taskTime.getMinutes());
+        mTaskDate.setSeconds(taskTime.getSeconds());
+    }
+
+
 
     public SimpleDateFormat getFormat() {
         return mFormat;
