@@ -79,7 +79,7 @@ public class DoneFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        TaskDBRepository taskDBRepository = TaskDBRepository.getInstance();
+        TaskDBRepository taskDBRepository = TaskDBRepository.getInstance(getActivity());
         List<Task> tasks = taskDBRepository.getTasksList(State.DONE);
 
         updateUI(tasks);
@@ -215,9 +215,9 @@ public class DoneFragment extends Fragment {
             Task task =
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
-            TaskDBRepository.getInstance().addTaskDone(task);
-            TaskDBRepository.getInstance().updateTask(task);
-            updateUI(TaskDBRepository.getInstance().getTasksList(State.DONE));
+            TaskDBRepository.getInstance(getActivity()).addTaskDone(task);
+            TaskDBRepository.getInstance(getActivity()).updateTask(task);
+            updateUI(TaskDBRepository.getInstance(getActivity()).getTasksList(State.DONE));
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
@@ -225,13 +225,13 @@ public class DoneFragment extends Fragment {
             switch (resultCode) {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
-                    TaskDBRepository.getInstance().updateTask(task);
+                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
 //                    updateUI(TaskDBRepository.getInstance().getTasks());
                     updateEditUI();
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
                     UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
-                    TaskDBRepository.getInstance().removeSingleTask(uuid);
+                    TaskDBRepository.getInstance(getActivity()).removeSingleTask(uuid);
                     updateEditUI();
                     break;
                 default:

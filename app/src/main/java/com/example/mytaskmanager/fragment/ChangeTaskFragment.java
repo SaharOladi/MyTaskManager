@@ -203,9 +203,9 @@ public class ChangeTaskFragment extends DialogFragment {
                     task.setTaskDate(mTask.getTaskDate());
                     task.setTaskTime(mTask.getTaskDate());
 
-                    TaskDBRepository.getInstance().addTaskToDo(task);
-                    TaskDBRepository.getInstance().updateTask(task);
-                    TaskDBRepository.getInstance().getTasksList(State.TODO);
+                    TaskDBRepository.getInstance(getActivity()).addTaskToDo(task);
+                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
+                    TaskDBRepository.getInstance(getActivity()).getTasksList(State.TODO);
 
                 } else if (checkedId == mRadioButtonDoing.getId()) {
                     mRadioButtonDoing.setChecked(true);
@@ -218,9 +218,9 @@ public class ChangeTaskFragment extends DialogFragment {
                     task.setTaskDate(mTask.getTaskDate());
                     task.setTaskTime(mTask.getTaskDate());
 
-                    TaskDBRepository.getInstance().addTaskDoing(task);
-                    TaskDBRepository.getInstance().updateTask(task);
-                    TaskDBRepository.getInstance().getTasksList(State.DOING);
+                    TaskDBRepository.getInstance(getActivity()).addTaskDoing(task);
+                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
+                    TaskDBRepository.getInstance(getActivity()).getTasksList(State.DOING);
 
                 } else {
                     mRadioButtonDone.setChecked(true);
@@ -232,12 +232,12 @@ public class ChangeTaskFragment extends DialogFragment {
                     task.setTaskDate(mTask.getTaskDate());
                     task.setTaskTime(mTask.getTaskDate());
 
-                    TaskDBRepository.getInstance().addTaskDone(task);
-                    TaskDBRepository.getInstance().updateTask(task);
-                    TaskDBRepository.getInstance().getTasksList(State.DONE);
+                    TaskDBRepository.getInstance(getActivity()).addTaskDone(task);
+                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
+                    TaskDBRepository.getInstance(getActivity()).getTasksList(State.DONE);
                 }
 
-                TaskDBRepository.getInstance().getTasks();
+                TaskDBRepository.getInstance(getActivity()).getTasks();
                 updateUI();
 
             }
@@ -245,7 +245,7 @@ public class ChangeTaskFragment extends DialogFragment {
     }
 
     private void updateTaskState(UUID taskID) {
-        TaskDBRepository.getInstance().removeSingleTask(taskID);
+        TaskDBRepository.getInstance(getActivity()).removeSingleTask(taskID);
     }
 
     private void updateUI() {

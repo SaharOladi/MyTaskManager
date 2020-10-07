@@ -99,7 +99,7 @@ public class TaskDetailFragment extends DialogFragment {
                         task.setTaskDescription(mTask.getTaskDescription());
                         task.setTaskState(mTask.getTaskState());
                         task.setTaskTime(mTask.getTaskDate());
-                        TaskDBRepository.getInstance().removeSingleTask(mTask.getTaskID());
+                        TaskDBRepository.getInstance(getActivity()).removeSingleTask(mTask.getTaskID());
                         sendResult(task);
                     }
                 })

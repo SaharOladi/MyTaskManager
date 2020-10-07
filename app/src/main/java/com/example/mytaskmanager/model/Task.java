@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public class Task implements Serializable {
 
-    private UUID   mTaskID;
+    private UUID mTaskID;
     private String mTaskTitle;
     private String mTaskDescription;
-    private State  mTaskState;
-    private Date   mTaskDate;
+    private State mTaskState;
+    private Date mTaskDate;
 
 
     private SimpleDateFormat mFormat;
@@ -22,6 +22,14 @@ public class Task implements Serializable {
     public Task() {
         mTaskID = UUID.randomUUID();
         mTaskDate = new Date();
+    }
+
+    public Task(UUID id, String title, String description, State state, Date date) {
+        mTaskID = id;
+        mTaskTitle = title;
+        mTaskDescription = description;
+        mTaskState = state;
+        mTaskDate = date;
     }
 
     public UUID getTaskID() {
@@ -71,12 +79,11 @@ public class Task implements Serializable {
         mTaskDate = calendar.getTime();
     }
 
-    public void setTaskTime(Date taskTime){
+    public void setTaskTime(Date taskTime) {
         mTaskDate.setHours(taskTime.getHours());
         mTaskDate.setMinutes(taskTime.getMinutes());
         mTaskDate.setSeconds(taskTime.getSeconds());
     }
-
 
 
     public SimpleDateFormat getFormat() {
@@ -87,12 +94,12 @@ public class Task implements Serializable {
         mFormat = format;
     }
 
-    public String getJustDate(){
+    public String getJustDate() {
         mFormat = new SimpleDateFormat("dd MMM yyyy");
         return mFormat.format(mTaskDate);
     }
 
-    public String getJustTime(){
+    public String getJustTime() {
         mFormat = new SimpleDateFormat("hh:mm a");
         return mFormat.format(mTaskDate);
     }
