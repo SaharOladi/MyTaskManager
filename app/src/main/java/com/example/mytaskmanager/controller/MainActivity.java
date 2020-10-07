@@ -7,12 +7,10 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.fragment.LoginFragment;
-import com.example.mytaskmanager.fragment.TaskDetailFragment;
-import com.example.mytaskmanager.fragment.ToDoFragment;
+
 
 public class MainActivity extends AppCompatActivity {
 

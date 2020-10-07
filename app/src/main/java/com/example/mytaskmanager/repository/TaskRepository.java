@@ -3,13 +3,11 @@ package com.example.mytaskmanager.repository;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class TaskRepository implements Serializable {
+public class TaskRepository implements IRepository {
 
     private static TaskRepository sInstance;
 

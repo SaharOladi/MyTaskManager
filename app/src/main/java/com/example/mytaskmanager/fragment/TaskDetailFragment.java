@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.text.method.MultiTapKeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -26,13 +25,9 @@ import androidx.fragment.app.Fragment;
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
-import com.example.mytaskmanager.repository.TaskRepository;
+import com.example.mytaskmanager.repository.TaskDBRepository;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.logging.SimpleFormatter;
 
 
 public class TaskDetailFragment extends DialogFragment {
@@ -104,7 +99,7 @@ public class TaskDetailFragment extends DialogFragment {
                         task.setTaskDescription(mTask.getTaskDescription());
                         task.setTaskState(mTask.getTaskState());
                         task.setTaskTime(mTask.getTaskDate());
-                        TaskRepository.getInstance().removeSingleTask(mTask.getTaskID());
+                        TaskDBRepository.getInstance().removeSingleTask(mTask.getTaskID());
                         sendResult(task);
                     }
                 })
