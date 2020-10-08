@@ -42,51 +42,58 @@ public class TaskDBRepository implements IRepository {
     @Override
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
-        Cursor cursor = mDatabase.query(
-                TaskDBSchema.TaskTable.NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-
-        );
-        if (cursor == null || cursor.getCount() == 0)
+        TaskCursorWrapper taskCursorWrapper = queryTaskCursor(null, null);
+        if (taskCursorWrapper == null || taskCursorWrapper.getCount() == 0)
             return tasks;
 
         try {
 
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
+            taskCursorWrapper.moveToFirst();
+            while (!taskCursorWrapper.isAfterLast()) {
 
-                Task task = extractTaskFromCursor(cursor);
+                Task task = taskCursorWrapper.getTask();
                 tasks.add(task);
 
-                cursor.moveToNext();
+                taskCursorWrapper.moveToNext();
             }
 
         } finally {
-            cursor.close();
+            taskCursorWrapper.close();
         }
 
         return tasks;
     }
 
-    private Task extractTaskFromCursor(Cursor cursor) {
-        UUID uuidString = UUID.fromString(cursor.getString(cursor.getColumnIndex(Cols.UUID)));
-        String title = cursor.getString(cursor.getColumnIndex(Cols.TITLE));
-        String description = cursor.getString(cursor.getColumnIndex(Cols.DESCRIPTION));
-        State state = State.valueOf(cursor.getString(cursor.getColumnIndex(Cols.STATE)));
-        Date timeStampDate = new Date(cursor.getLong(cursor.getColumnIndex(Cols.DATE)));
-
-        return new Task(uuidString, title, description, state, timeStampDate);
-    }
+//    private Task extractTaskFromCursor(Cursor cursor) {
+//        UUID uuidString = UUID.fromString(cursor.getString(cursor.getColumnIndex(Cols.UUID)));
+//        String title = cursor.getString(cursor.getColumnIndex(Cols.TITLE));
+//        String description = cursor.getString(cursor.getColumnIndex(Cols.DESCRIPTION));
+//        State state = State.valueOf(cursor.getString(cursor.getColumnIndex(Cols.STATE)));
+//        Date timeStampDate = new Date(cursor.getLong(cursor.getColumnIndex(Cols.DATE)));
+//
+//        return new Task(uuidString, title, description, state, timeStampDate);
+//    }
 
     @Override
     public Task getSingleTask(UUID taskId) {
         String where = Cols.UUID + " = ?";
         String[] whereArgs = new String[]{taskId.toString()};
+
+        TaskCursorWrapper taskCursorWrapper = queryTaskCursor(where, whereArgs);
+
+        if (taskCursorWrapper == null || taskCursorWrapper.getCount() == 0)
+            return null;
+
+        try {
+            taskCursorWrapper.moveToFirst();
+            Task task = taskCursorWrapper.getTask();
+            return task;
+        } finally {
+            taskCursorWrapper.close();
+        }
+    }
+
+    private TaskCursorWrapper queryTaskCursor(String where, String[] whereArgs) {
 
         Cursor cursor = mDatabase.query(
                 TaskDBSchema.TaskTable.NAME,
@@ -97,16 +104,8 @@ public class TaskDBRepository implements IRepository {
                 null,
                 null);
 
-        if (cursor == null || cursor.getCount() == 0)
-            return null;
-
-        try {
-            cursor.moveToFirst();
-            Task task = extractTaskFromCursor(cursor);
-            return task;
-        } finally {
-            cursor.close();
-        }
+        TaskCursorWrapper taskCursorWrapper = new TaskCursorWrapper(cursor);
+        return taskCursorWrapper;
     }
 
     @Override
@@ -147,26 +146,19 @@ public class TaskDBRepository implements IRepository {
         String where = Cols.STATE + " = ?";
         String[] whereArgs = new String[]{state.toString()};
 
-        Cursor cursor = mDatabase.query(
-                TaskDBSchema.TaskTable.NAME,
-                null,
-                where,
-                whereArgs,
-                null,
-                null,
-                null);
+        TaskCursorWrapper taskCursorWrapper = queryTaskCursor(where, whereArgs);
 
-        if (cursor == null || cursor.getCount() == 0)
+        if (taskCursorWrapper == null || taskCursorWrapper.getCount() == 0)
             return null;
 
         try {
-            cursor.moveToFirst();
-            Task task = extractTaskFromCursor(cursor);
+            taskCursorWrapper.moveToFirst();
+            Task task = taskCursorWrapper.getTask();
             tasks.add(task);
             return tasks;
 
         } finally {
-            cursor.close();
+            taskCursorWrapper.close();
         }
     }
 
