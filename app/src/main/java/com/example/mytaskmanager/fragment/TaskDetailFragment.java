@@ -34,7 +34,6 @@ public class TaskDetailFragment extends DialogFragment {
 
     public static final String ARGS_TASK_STATE = "tagTaskState";
     public static final String ARGS_TASK = "ARGS_TASK";
-    public static final String ARGS_DATE = "ARGS_DATE";
 
     public static final int REQUEST_CODE_DATE_PICKER = 1;
     public static final int REQUEST_CODE_TIME_PICKER = 2;

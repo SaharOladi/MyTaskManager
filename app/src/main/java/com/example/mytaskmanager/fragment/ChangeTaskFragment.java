@@ -251,12 +251,11 @@ public class ChangeTaskFragment extends DialogFragment {
     private void updateUI() {
         if (getTargetFragment() instanceof TaskListFragment)
             ((TaskListFragment) getTargetFragment()).updateEditUI();
-
-        else if (getTargetFragment() instanceof DoingFragment)
-            ((DoingFragment) getTargetFragment()).updateEditUI();
-
-        else
-            ((DoneFragment) getTargetFragment()).updateEditUI();
+//        else if (getTargetFragment() instanceof DoingFragment)
+//            ((DoingFragment) getTargetFragment()).updateEditUI();
+//
+//        else
+//            ((DoneFragment) getTargetFragment()).updateEditUI();
     }
 
 

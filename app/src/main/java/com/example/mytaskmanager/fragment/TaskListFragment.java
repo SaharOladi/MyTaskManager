@@ -1,5 +1,8 @@
 package com.example.mytaskmanager.fragment;
 
+import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -10,9 +13,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Filter;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.mytaskmanager.R;
@@ -21,6 +30,8 @@ import com.example.mytaskmanager.model.Task;
 import com.example.mytaskmanager.repository.TaskDBRepository;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,7 +41,6 @@ public class TaskListFragment extends Fragment {
     public static final String TASK_DETAIL_FRAGMENT = "taskDetailFragment";
     public static final String CHANGE_TASK_FRAGMENT = "changeTaskFragment";
     public static final String ARGS_STATE_FROM_PAGER_ACTIVITY = "STATE_FROM_PAGER_ACTIVITY";
-
 
 
     public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
@@ -45,6 +55,8 @@ public class TaskListFragment extends Fragment {
 
     private Task mTask = new Task();
     private State mState;
+    private List<Task> mTaskList = new ArrayList<>();
+    private TaskDBRepository mTaskDBRepository;
 
 
     public TaskListFragment() {
@@ -62,9 +74,13 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
-        mTask.setTaskState(mState);
 
+
+        setHasOptionsMenu(true);
+
+        mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
+        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
+        mTaskList = mTaskDBRepository.getTasksList(mState);
     }
 
     @Override
@@ -82,28 +98,27 @@ public class TaskListFragment extends Fragment {
     }
 
     private void initViews() {
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-        TaskDBRepository taskDBRepository = TaskDBRepository.getInstance(getActivity());
-        List<Task> tasks = taskDBRepository.getTasksList(mState);
-        if (tasks != null)
-            updateUI(tasks);
-
+        mTaskList = mTaskDBRepository.getTasksList(mState);
+        if (mTaskList != null)
+            updateUI(mState);
     }
 
-    private void updateUI(List<Task> tasks) {
-        if (tasks.size() != 0 || tasks != null) {
-
+    public void updateUI(State state) {
+        mTaskList = mTaskDBRepository.getTasksList(state);
+        if (mTaskList != null || mTaskList.size() != 0) {
             mEmptyImage.setVisibility(View.GONE);
             mEmptyText.setVisibility(View.GONE);
 
-            if (mTaskAdapter == null) {
-                mTaskAdapter = new TaskAdapter(tasks);
-                mRecyclerView.setAdapter(mTaskAdapter);
-            } else {
-                mTaskAdapter.setTasks(tasks);
-                mTaskAdapter.notifyDataSetChanged();
+            if (isAdded()) {
+                if (mTaskAdapter != null) {
+                    mTaskAdapter.setTasks(mTaskList);
+                    mTaskAdapter.notifyDataSetChanged();
+                } else {
+                    mTaskAdapter = new TaskAdapter(mTaskList);
+                    mRecyclerView.setAdapter(mTaskAdapter);
+                }
+
             }
         } else {
             mEmptyImage.setVisibility(View.VISIBLE);
@@ -124,7 +139,7 @@ public class TaskListFragment extends Fragment {
             public void onClick(View view) {
 
                 TaskDetailFragment taskDetailFragment =
-                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/mState);
+                        TaskDetailFragment.newInstance(mTask, mState);
 
                 taskDetailFragment.setTargetFragment(
                         TaskListFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
@@ -208,25 +223,67 @@ public class TaskListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mTasks.size();
+            if (mTasks != null)
+                return mTasks.size();
+            return 0;
         }
+
+        public Filter getFilter() {
+            final List<Task> mAllTasks = mTaskList;
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+
+                    List<Task> filteredList = new ArrayList<>();
+
+                    if (constraint == null || constraint.length() == 0) {
+                        filteredList.addAll(mAllTasks);
+
+                    } else {
+                        String filter = constraint.toString().toLowerCase().trim();
+                        for (Task task : mAllTasks) {
+                            if (task.getTaskTitle().toLowerCase().contains(filter) ||
+                                    task.getTaskDescription().toLowerCase().contains(filter) ||
+                                    task.getJustDate().toLowerCase().contains(filter) ||
+                                    task.getJustTime().toLowerCase().contains(filter)) {
+                                filteredList.add(task);
+                            }
+                        }
+                    }
+
+                    FilterResults results = new FilterResults();
+                    results.values = filteredList;
+                    return results;
+                }
+
+                @Override
+                @SuppressWarnings("unchecked")
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    if (mTasks != null)
+                        mTasks.clear();
+                    else
+                        mTasks = new ArrayList<>();
+
+                    if (results.values != null)
+                        mTasks.addAll((Collection<? extends Task>) results.values);
+                    notifyDataSetChanged();
+                }
+            };
+        }
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (/**(resultCode != 1  && requestCode != 2 && resultCode != Activity.RESULT_OK) ||**/data == null)
+        if (resultCode != Activity.RESULT_OK || data == null)
             return;
 
         if (requestCode == REQUEST_CODE_TASK_DETAIL_FRAGMENT) {
             Task task =
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
-            TaskDBRepository.getInstance(getActivity()).insertTask(task);
-            TaskDBRepository.getInstance(getActivity()).updateTask(task);
-            List<Task> tasks = TaskDBRepository.getInstance(getActivity()).getTasksList(mState);
-            if (tasks != null)
-                updateUI(TaskDBRepository.getInstance(getActivity()).getTasksList(mState));
-//            updateUI(TaskDBRepository.getInstance(getActivity()).getTasks());
+            mTaskDBRepository.insertTask(task);
+            updateUI(mState);
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
@@ -234,13 +291,14 @@ public class TaskListFragment extends Fragment {
             switch (resultCode) {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
-                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
-//                    updateUI(TaskDBRepository.getInstance().getTasks());
+                    mTaskDBRepository.updateTask(task);
+//                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
                     updateEditUI();
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
                     UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
-                    TaskDBRepository.getInstance(getActivity()).removeSingleTask(uuid);
+                    mTaskDBRepository.removeSingleTask(uuid);
+//                    TaskDBRepository.getInstance(getActivity()).removeSingleTask(uuid);
                     updateEditUI();
                     break;
                 default:
@@ -267,4 +325,33 @@ public class TaskListFragment extends Fragment {
         super.onResume();
         updateEditUI();
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.menu_search_task);
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mTaskAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+    }
+
+
 }

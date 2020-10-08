@@ -5,19 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
-import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
 
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.text.Transliterator;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
+import android.widget.SearchView;
 
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.fragment.LoginFragment;
@@ -41,7 +43,6 @@ public class PagerActivity extends AppCompatActivity {
         add(State.DOING);
         add(State.DONE);
     }};
-
 
 
     public static Intent newIntent(Context context) {
@@ -91,7 +92,7 @@ public class PagerActivity extends AppCompatActivity {
 
         tabLayoutMediator.attach();
 
-        mViewPager.registerOnPageChangeCallback(new OnPageChangeCallback() {
+        mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
@@ -100,6 +101,7 @@ public class PagerActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
+                mPageAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -107,6 +109,7 @@ public class PagerActivity extends AppCompatActivity {
                 super.onPageScrollStateChanged(state);
             }
         });
+
     }
 
 
@@ -122,22 +125,12 @@ public class PagerActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             return TaskListFragment.newInstance(mTaskState.get(position));
         }
-//            switch (position) {
-//                case 0:
-//                    return TaskListFragment.newInstance();
-//                case 1:
-//                    return TaskListFragment.newInstance();
-//                case 2:
-//                    return TaskListFragment.newInstance();
-//                default:
-//                    return null;
-//            }
-
 
         @Override
         public int getItemCount() {
             return 3;
         }
+
 
     }
 
@@ -145,7 +138,6 @@ public class PagerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
-
 
         return true;
     }
@@ -174,9 +166,6 @@ public class PagerActivity extends AppCompatActivity {
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
-                return true;
-            case R.id.menu_search_task:
-                //TODO
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -7,9 +7,5 @@
         android:icon="@drawable/ic_logout_user"
         android:title="Logout"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/menu_search_task"
-        android:icon="@android:drawable/ic_menu_search"
-        android:title="Search Task"
-        app:showAsAction="ifRoom|withText" />
+
 </menu>
