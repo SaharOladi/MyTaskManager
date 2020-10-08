@@ -64,16 +64,6 @@ public class TaskDBRepository implements IRepository {
         return tasks;
     }
 
-//    private Task extractTaskFromCursor(Cursor cursor) {
-//        UUID uuidString = UUID.fromString(cursor.getString(cursor.getColumnIndex(Cols.UUID)));
-//        String title = cursor.getString(cursor.getColumnIndex(Cols.TITLE));
-//        String description = cursor.getString(cursor.getColumnIndex(Cols.DESCRIPTION));
-//        State state = State.valueOf(cursor.getString(cursor.getColumnIndex(Cols.STATE)));
-//        Date timeStampDate = new Date(cursor.getLong(cursor.getColumnIndex(Cols.DATE)));
-//
-//        return new Task(uuidString, title, description, state, timeStampDate);
-//    }
-
     @Override
     public Task getSingleTask(UUID taskId) {
         String where = Cols.UUID + " = ?";

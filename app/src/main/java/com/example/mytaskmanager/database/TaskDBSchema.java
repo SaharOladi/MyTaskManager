@@ -29,7 +29,7 @@ public class TaskDBSchema {
 
             public static final String ID = "id";
             public static final String UUID = "uuid";
-            public static final String NAME = "name";
+            public static final String USERNAME = "name";
             public static final String PASSWORD = "password";
             public static final String DATE = "login_date";
 

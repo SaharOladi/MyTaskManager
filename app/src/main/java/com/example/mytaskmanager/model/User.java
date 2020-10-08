@@ -16,6 +16,13 @@ public class User implements Serializable {
         mUserLoginDate = new Date();
     }
 
+    public User(UUID userID, String userName, String userPassword, Date userLoginDate) {
+        mUserID = userID;
+        mUserName = userName;
+        mUserPassword = userPassword;
+        mUserLoginDate = userLoginDate;
+    }
+
     public User(String userName, String userPassword) {
         mUserName = userName;
         mUserPassword = userPassword;
