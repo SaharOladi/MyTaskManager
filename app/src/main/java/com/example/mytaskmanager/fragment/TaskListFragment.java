@@ -25,10 +25,12 @@ import java.util.List;
 import java.util.UUID;
 
 
-public class ToDoFragment extends Fragment {
+public class TaskListFragment extends Fragment {
 
     public static final String TASK_DETAIL_FRAGMENT = "taskDetailFragment";
     public static final String CHANGE_TASK_FRAGMENT = "changeTaskFragment";
+    public static final String ARGS_STATE_FROM_PAGER_ACTIVITY = "STATE_FROM_PAGER_ACTIVITY";
+
 
 
     public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
@@ -42,14 +44,17 @@ public class ToDoFragment extends Fragment {
     private TextView mEmptyText;
 
     private Task mTask = new Task();
+    private State mState;
 
-    public ToDoFragment() {
+
+    public TaskListFragment() {
         // Required empty public constructor
     }
 
-    public static ToDoFragment newInstance() {
-        ToDoFragment fragment = new ToDoFragment();
+    public static TaskListFragment newInstance(State state) {
+        TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
+        args.putSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY, state);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,6 +62,8 @@ public class ToDoFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
+        mTask.setTaskState(mState);
 
     }
 
@@ -79,7 +86,7 @@ public class ToDoFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         TaskDBRepository taskDBRepository = TaskDBRepository.getInstance(getActivity());
-        List<Task> tasks = taskDBRepository.getTasksList(State.TODO);
+        List<Task> tasks = taskDBRepository.getTasksList(mState);
         if (tasks != null)
             updateUI(tasks);
 
@@ -117,10 +124,10 @@ public class ToDoFragment extends Fragment {
             public void onClick(View view) {
 
                 TaskDetailFragment taskDetailFragment =
-                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/State.TODO);
+                        TaskDetailFragment.newInstance(mTask, /** mTask.getTaskDate(),**/mState);
 
                 taskDetailFragment.setTargetFragment(
-                        ToDoFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
+                        TaskListFragment.this, REQUEST_CODE_TASK_DETAIL_FRAGMENT);
 
                 taskDetailFragment.show(getFragmentManager(), TASK_DETAIL_FRAGMENT);
 
@@ -147,7 +154,7 @@ public class ToDoFragment extends Fragment {
                     ChangeTaskFragment changeTaskFragment = ChangeTaskFragment.newInstance(mTask);
 
                     changeTaskFragment.setTargetFragment(
-                            ToDoFragment.this, REQUEST_CODE_CHANGE_TASK_FRAGMENT);
+                            TaskListFragment.this, REQUEST_CODE_CHANGE_TASK_FRAGMENT);
 
                     changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
 
@@ -214,12 +221,12 @@ public class ToDoFragment extends Fragment {
             Task task =
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
-            TaskDBRepository.getInstance(getActivity()).addTaskToDo(task);
+            TaskDBRepository.getInstance(getActivity()).insertTask(task);
             TaskDBRepository.getInstance(getActivity()).updateTask(task);
-            List<Task> tasks = TaskDBRepository.getInstance(getActivity()).getTasksList(State.TODO);
+            List<Task> tasks = TaskDBRepository.getInstance(getActivity()).getTasksList(mState);
             if (tasks != null)
-                updateUI(TaskDBRepository.getInstance(getActivity()).getTasksList(State.TODO));
-            updateUI(TaskDBRepository.getInstance(getActivity()).getTasks());
+                updateUI(TaskDBRepository.getInstance(getActivity()).getTasksList(mState));
+//            updateUI(TaskDBRepository.getInstance(getActivity()).getTasks());
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {

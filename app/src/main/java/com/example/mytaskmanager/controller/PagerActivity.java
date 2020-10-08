@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -18,13 +20,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.example.mytaskmanager.R;
-import com.example.mytaskmanager.fragment.DoingFragment;
-import com.example.mytaskmanager.fragment.DoneFragment;
 import com.example.mytaskmanager.fragment.LoginFragment;
-import com.example.mytaskmanager.fragment.ToDoFragment;
+import com.example.mytaskmanager.fragment.TaskListFragment;
+import com.example.mytaskmanager.model.State;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class PagerActivity extends AppCompatActivity {
@@ -32,6 +35,13 @@ public class PagerActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager;
     PageAdapter mPageAdapter;
+
+    List<State> mTaskState = new ArrayList<State>() {{
+        add(State.TODO);
+        add(State.DOING);
+        add(State.DONE);
+    }};
+
 
 
     public static Intent newIntent(Context context) {
@@ -81,7 +91,22 @@ public class PagerActivity extends AppCompatActivity {
 
         tabLayoutMediator.attach();
 
+        mViewPager.registerOnPageChangeCallback(new OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
 
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
     }
 
 
@@ -95,17 +120,19 @@ public class PagerActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            switch (position) {
-                case 0:
-                    return ToDoFragment.newInstance();
-                case 1:
-                    return DoingFragment.newInstance();
-                case 2:
-                    return DoneFragment.newInstance();
-                default:
-                    return null;
-            }
+            return TaskListFragment.newInstance(mTaskState.get(position));
         }
+//            switch (position) {
+//                case 0:
+//                    return TaskListFragment.newInstance();
+//                case 1:
+//                    return TaskListFragment.newInstance();
+//                case 2:
+//                    return TaskListFragment.newInstance();
+//                default:
+//                    return null;
+//            }
+
 
         @Override
         public int getItemCount() {
