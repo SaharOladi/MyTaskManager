@@ -124,9 +124,9 @@ public class TaskDBRepository implements IRepository {
     }
 
     @Override
-    public void removeSingleTask(UUID taskId) {
+    public void removeSingleTask(Task task) {
         String whereClause = Cols.UUID + " = ?";
-        String[] whereArgs = new String[]{taskId.toString()};
+        String[] whereArgs = new String[]{task.getTaskID().toString()};
         mDatabase.delete(TaskDBSchema.TaskTable.NAME, whereClause, whereArgs);
     }
 
@@ -143,13 +143,16 @@ public class TaskDBRepository implements IRepository {
 
         try {
             taskCursorWrapper.moveToFirst();
-            Task task = taskCursorWrapper.getTask();
-            tasks.add(task);
-            return tasks;
+            while (!taskCursorWrapper.isAfterLast()) {
+                Task task = taskCursorWrapper.getTask();
+                tasks.add(task);
+                taskCursorWrapper.moveToNext();
+            }
 
         } finally {
             taskCursorWrapper.close();
         }
+        return tasks;
     }
 
     @Override

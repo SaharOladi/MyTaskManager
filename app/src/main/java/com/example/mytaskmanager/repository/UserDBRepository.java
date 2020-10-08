@@ -96,8 +96,9 @@ public class UserDBRepository {
 
     public boolean checkUserLogin(String username, String password) {
 
-        String whereClause = TaskDBSchema.UserTable.Cols.USERNAME + " = ?" + " AND " + TaskDBSchema.UserTable.Cols.PASSWORD + " = ?"; //<<<<<<<<<< ?'s will be replaced according to whereargs on a 1 by 1 basis
+        String whereClause = TaskDBSchema.UserTable.Cols.USERNAME + " = ?" + " AND " + TaskDBSchema.UserTable.Cols.PASSWORD + " = ?";
         String[] whereArgs = new String[]{username, password};
+
         UserCursorWrapper userCursorWrapper = queryUserCursor(whereClause, whereArgs);
         int count = userCursorWrapper.getCount();
         userCursorWrapper.close();

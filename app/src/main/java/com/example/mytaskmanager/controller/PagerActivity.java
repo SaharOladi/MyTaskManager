@@ -18,8 +18,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.inputmethod.EditorInfo;
-import android.widget.SearchView;
 
 import com.example.mytaskmanager.R;
 import com.example.mytaskmanager.fragment.LoginFragment;
@@ -93,21 +91,13 @@ public class PagerActivity extends AppCompatActivity {
         tabLayoutMediator.attach();
 
         mViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-            }
 
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                mPageAdapter.notifyDataSetChanged();
+                mPageAdapter.mFragmentList.get(position).updateUI(mTaskState.get(position));
             }
 
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                super.onPageScrollStateChanged(state);
-            }
         });
 
     }
@@ -115,6 +105,11 @@ public class PagerActivity extends AppCompatActivity {
 
     private class PageAdapter extends FragmentStateAdapter {
 
+        private List<TaskListFragment> mFragmentList = new ArrayList<TaskListFragment>() {{
+            add(TaskListFragment.newInstance(mTaskState.get(0)));
+            add(TaskListFragment.newInstance(mTaskState.get(1)));
+            add(TaskListFragment.newInstance(mTaskState.get(2)));
+        }};
 
         public PageAdapter(@NonNull FragmentActivity fragmentActivity) {
             super(fragmentActivity);

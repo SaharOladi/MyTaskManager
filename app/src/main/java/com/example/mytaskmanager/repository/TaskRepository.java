@@ -67,27 +67,27 @@ public class TaskRepository implements IRepository {
 
 
 
-    public void removeSingleTask(UUID taskId) {
+    public void removeSingleTask(Task newTask) {
         for (Task task:mTaskToDo) {
-            if (task.getTaskID().equals(taskId)) {
+            if (task.getTaskID().equals(newTask.getTaskID())) {
                 mTaskToDo.remove(task);
                 return;
             }
         }
         for (Task task:mTaskDone) {
-            if (task.getTaskID().equals(taskId)) {
+            if (task.getTaskID().equals(newTask.getTaskID())) {
                 mTaskDone.remove(task);
                 return;
             }
         }
         for (Task task:mTaskDoing) {
-            if (task.getTaskID().equals(taskId)) {
+            if (task.getTaskID().equals(newTask.getTaskID())) {
                 mTaskDoing.remove(task);
                 return;
             }
         }
         for (Task task:mTasks) {
-            if (task.getTaskID().equals(taskId)) {
+            if (task.getTaskID().equals(newTask.getTaskID())) {
                 mTasks.remove(task);
                 return;
             }
@@ -141,7 +141,7 @@ public class TaskRepository implements IRepository {
         findTask.setTaskState(task.getTaskState());
 
         insertTask(findTask);
-        removeSingleTask(task.getTaskID());
+        removeSingleTask(task);
     }
 
     public List<Task> getTasks(){

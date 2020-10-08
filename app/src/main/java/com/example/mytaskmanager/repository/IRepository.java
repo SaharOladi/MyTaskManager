@@ -13,7 +13,7 @@ public interface IRepository extends Serializable {
     Task getSingleTask(UUID taskId);
     void insertTask(Task task);
     void updateTask(Task task);
-    void removeSingleTask(UUID taskId);
+    void removeSingleTask(Task task);
     void removeTasks();
     List<Task> getTasksList(State state);
     void addTaskToDo(Task task);

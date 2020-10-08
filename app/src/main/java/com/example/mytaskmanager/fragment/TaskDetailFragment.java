@@ -35,14 +35,13 @@ public class TaskDetailFragment extends DialogFragment {
     public static final String ARGS_TASK_STATE = "tagTaskState";
     public static final String ARGS_TASK = "ARGS_TASK";
 
-    public static final int REQUEST_CODE_DATE_PICKER = 1;
-    public static final int REQUEST_CODE_TIME_PICKER = 2;
+    public static final int REQUEST_CODE_DATE_PICKER = 80;
+    public static final int REQUEST_CODE_TIME_PICKER = 90;
 
     public static final String EXTRA_TASK = "EXTRA_TASK";
 
     public static final String TAG_DATE_PICKER_FRAGMENT = "TAG_DATE_PICKER_FRAGMENT";
     public static final String TAG_TIME_PICKER_FRAGMENT = "TAG_TIME_PICKER_FRAGMENT";
-
 
 
     private EditText mTaskTitle, mTaskDescription;
@@ -55,11 +54,10 @@ public class TaskDetailFragment extends DialogFragment {
         // Required empty public constructor
     }
 
-    public static TaskDetailFragment newInstance(Task task,/** Date date,**/ State state) {
+    public static TaskDetailFragment newInstance(Task task, State state) {
         TaskDetailFragment fragment = new TaskDetailFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARGS_TASK, task);
-//        args.putSerializable(ARGS_DATE, date);
         args.putSerializable(ARGS_TASK_STATE, state);
         fragment.setArguments(args);
         return fragment;
@@ -98,7 +96,7 @@ public class TaskDetailFragment extends DialogFragment {
                         task.setTaskDescription(mTask.getTaskDescription());
                         task.setTaskState(mTask.getTaskState());
                         task.setTaskTime(mTask.getTaskDate());
-                        TaskDBRepository.getInstance(getActivity()).removeSingleTask(mTask.getTaskID());
+                        TaskDBRepository.getInstance(getActivity()).removeSingleTask(mTask);
                         sendResult(task);
                     }
                 })
@@ -238,7 +236,6 @@ public class TaskDetailFragment extends DialogFragment {
         if (requestCode == REQUEST_CODE_TIME_PICKER) {
             Date userSelectedTime =
                     (Date) data.getSerializableExtra(TimePickerFragment.EXTRA_USER_SELECTED_TIME);
-
 
 
             updateTaskTime(userSelectedTime);

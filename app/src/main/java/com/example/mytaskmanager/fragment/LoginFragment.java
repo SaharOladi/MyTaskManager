@@ -21,7 +21,7 @@ import com.example.mytaskmanager.model.User;
 
 public class LoginFragment extends Fragment {
 
-    public static final int Request_Code_Sign_Up = 0;
+    public static final int Request_Code_Sign_Up = 70;
 
 
     private EditText mUserName;

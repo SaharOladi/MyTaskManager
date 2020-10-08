@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.method.MultiTapKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,8 +44,8 @@ public class TaskListFragment extends Fragment {
     public static final String ARGS_STATE_FROM_PAGER_ACTIVITY = "STATE_FROM_PAGER_ACTIVITY";
 
 
-    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 0;
-    public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 4;
+    public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 10;
+    public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 20;
 
 
     private RecyclerView mRecyclerView;
@@ -100,30 +101,49 @@ public class TaskListFragment extends Fragment {
     private void initViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTaskList = mTaskDBRepository.getTasksList(mState);
+        mTaskAdapter = new TaskAdapter(mTaskList);
+        mRecyclerView.setAdapter(mTaskAdapter);
+
         if (mTaskList != null)
             updateUI(mState);
     }
 
     public void updateUI(State state) {
-        mTaskList = mTaskDBRepository.getTasksList(state);
-        if (mTaskList != null || mTaskList.size() != 0) {
-            mEmptyImage.setVisibility(View.GONE);
-            mEmptyText.setVisibility(View.GONE);
 
-            if (isAdded()) {
-                if (mTaskAdapter != null) {
-                    mTaskAdapter.setTasks(mTaskList);
-                    mTaskAdapter.notifyDataSetChanged();
-                } else {
-                    mTaskAdapter = new TaskAdapter(mTaskList);
-                    mRecyclerView.setAdapter(mTaskAdapter);
+        if (mTaskDBRepository != null) {
+            mTaskList = mTaskDBRepository.getTasksList(state);
+            if (mTaskList != null) {
+                if (mTaskList.size() != 0) {
+                    mEmptyImage.setVisibility(View.GONE);
+                    mEmptyText.setVisibility(View.GONE);
+
+                    if (isAdded()) {
+                        if (mTaskAdapter != null) {
+                            mTaskAdapter.setTasks(mTaskList);
+                            mTaskAdapter.notifyDataSetChanged();
+                        } else {
+                            mTaskAdapter = new TaskAdapter(mTaskList);
+                            mRecyclerView.setAdapter(mTaskAdapter);
+                        }
+
+                    }else if(isRemoving()){
+                        if (mTaskAdapter != null) {
+                            mTaskAdapter.setTasks(mTaskList);
+                            mTaskAdapter.notifyDataSetChanged();
+                        } else {
+                            mTaskAdapter = new TaskAdapter(mTaskList);
+                            mRecyclerView.setAdapter(mTaskAdapter);
+                        }
+                    }
                 }
-
+            }else {
+                mEmptyImage.setVisibility(View.VISIBLE);
+                mEmptyText.setVisibility(View.VISIBLE);
             }
-        } else {
-            mEmptyImage.setVisibility(View.VISIBLE);
-            mEmptyText.setVisibility(View.VISIBLE);
+        }else{
+            return;
         }
+
     }
 
     private void findViews(View view) {
@@ -275,7 +295,7 @@ public class TaskListFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (resultCode != Activity.RESULT_OK || data == null)
+        if (data == null)
             return;
 
         if (requestCode == REQUEST_CODE_TASK_DETAIL_FRAGMENT) {
@@ -287,19 +307,18 @@ public class TaskListFragment extends Fragment {
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
-
+            Task task;
             switch (resultCode) {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
-                    Task task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
+                    task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
                     mTaskDBRepository.updateTask(task);
-//                    TaskDBRepository.getInstance(getActivity()).updateTask(task);
-                    updateEditUI();
+                    updateUI(task.getTaskState());
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
-                    UUID uuid = (UUID) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE_DELETE);
-                    mTaskDBRepository.removeSingleTask(uuid);
-//                    TaskDBRepository.getInstance(getActivity()).removeSingleTask(uuid);
-                    updateEditUI();
+                    task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_DELETE);
+                    State state = task.getTaskState();
+                    mTaskDBRepository.removeSingleTask(task);
+                    updateUI(state);
                     break;
                 default:
                     break;
@@ -346,7 +365,7 @@ public class TaskListFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mTaskAdapter.getFilter().filter(newText);
+//                mTaskAdapter.getFilter().filter(newText);
                 return false;
             }
         });
