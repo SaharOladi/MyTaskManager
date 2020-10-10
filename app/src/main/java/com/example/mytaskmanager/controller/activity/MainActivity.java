@@ -1,4 +1,4 @@
-package com.example.mytaskmanager.controller;
+package com.example.mytaskmanager.controller.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.mytaskmanager.R;
-import com.example.mytaskmanager.fragment.LoginFragment;
+import com.example.mytaskmanager.controller.fragment.LoginFragment;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (fragment == null) {
-            LoginFragment loginFragment = new LoginFragment();
+            LoginFragment loginFragment = LoginFragment.newInstance();
             fragmentManager
                     .beginTransaction()
                     .add(R.id.fragment_container, loginFragment)

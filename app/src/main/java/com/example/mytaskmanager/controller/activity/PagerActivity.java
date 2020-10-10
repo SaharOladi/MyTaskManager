@@ -1,27 +1,18 @@
-package com.example.mytaskmanager.controller;
+package com.example.mytaskmanager.controller.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.AlertDialog;
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.icu.text.Transliterator;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 
 import com.example.mytaskmanager.R;
-import com.example.mytaskmanager.fragment.LoginFragment;
-import com.example.mytaskmanager.fragment.TaskListFragment;
+import com.example.mytaskmanager.controller.fragment.TaskListFragment;
 import com.example.mytaskmanager.model.State;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -129,44 +120,6 @@ public class PagerActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_logout:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                        .setTitle("Do You Want To Exit?")
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                FragmentManager fragmentManager = getSupportFragmentManager();
-
-                                LoginFragment loginFragment = new LoginFragment();
-                                fragmentManager
-                                        .beginTransaction()
-                                        .add(R.id.fragment_container, loginFragment)
-                                        .commit();
-
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, null);
-
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
 
     @Override
     protected void onResume() {

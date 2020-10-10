@@ -20,8 +20,7 @@ public class UserCursorWrapper extends CursorWrapper {
         UUID uuidString = UUID.fromString(getString(getColumnIndex(TaskDBSchema.UserTable.Cols.UUID)));
         String userName = getString(getColumnIndex(TaskDBSchema.UserTable.Cols.USERNAME));
         String userPassword = getString(getColumnIndex(TaskDBSchema.UserTable.Cols.PASSWORD));
-        Date loginDate = new Date(getLong(getColumnIndex(TaskDBSchema.UserTable.Cols.DATE)));
 
-        return new User(uuidString, userName, userPassword, loginDate);
+        return new User(uuidString, userName, userPassword);
     }
 }

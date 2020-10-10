@@ -1,35 +1,37 @@
 package com.example.mytaskmanager.model;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.UUID;
 
 public class User implements Serializable {
 
-    private UUID   mUserID;
+    private UUID mId;
     private String mUserName;
-    private String mUserPassword;
-    private Date   mUserLoginDate;
+    private String mPassword;
+
+    public User(UUID id,String userName, String password) {
+        mId = id;
+        mUserName = userName;
+        mPassword = password;
+    }
+
+    public User(String userName, String password) {
+        mId = UUID.randomUUID();
+        mUserName = userName;
+        mPassword = password;
+    }
+
+    public User(UUID id) {
+        mId = id;
+    }
 
     public User() {
-        mUserID = UUID.randomUUID();
-        mUserLoginDate = new Date();
+        this(UUID.randomUUID());
     }
 
-    public User(UUID userID, String userName, String userPassword, Date userLoginDate) {
-        mUserID = userID;
-        mUserName = userName;
-        mUserPassword = userPassword;
-        mUserLoginDate = userLoginDate;
-    }
-
-    public User(String userName, String userPassword) {
-        mUserName = userName;
-        mUserPassword = userPassword;
-    }
-
-    public UUID getUserID() {
-        return mUserID;
+    //Getter & Setters
+    public UUID getId() {
+        return mId;
     }
 
     public String getUserName() {
@@ -40,19 +42,11 @@ public class User implements Serializable {
         mUserName = userName;
     }
 
-    public String getUserPassword() {
-        return mUserPassword;
+    public String getPassword() {
+        return mPassword;
     }
 
-    public void setUserPassword(String userPassword) {
-        mUserPassword = userPassword;
-    }
-
-    public Date getUserLoginDate() {
-        return mUserLoginDate;
-    }
-
-    public void setUserLoginDate(Date userLoginDate) {
-        mUserLoginDate = userLoginDate;
+    public void setPassword(String password) {
+        mPassword = password;
     }
 }

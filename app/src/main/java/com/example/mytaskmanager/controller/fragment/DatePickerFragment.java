@@ -1,4 +1,4 @@
-package com.example.mytaskmanager.fragment;
+package com.example.mytaskmanager.controller.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;

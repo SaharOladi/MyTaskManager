@@ -1,8 +1,9 @@
-package com.example.mytaskmanager.fragment;
+package com.example.mytaskmanager.controller.fragment;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.method.MultiTapKeyListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +26,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.mytaskmanager.R;
+import com.example.mytaskmanager.controller.activity.MainActivity;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 import com.example.mytaskmanager.repository.TaskDBRepository;
@@ -34,7 +35,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 
 public class TaskListFragment extends Fragment {
@@ -80,8 +80,7 @@ public class TaskListFragment extends Fragment {
         setHasOptionsMenu(true);
 
         mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
-        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
-        mTaskList = mTaskDBRepository.getTasksList(mState);
+
     }
 
     @Override
@@ -100,6 +99,7 @@ public class TaskListFragment extends Fragment {
 
     private void initViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
         mTaskList = mTaskDBRepository.getTasksList(mState);
         mTaskAdapter = new TaskAdapter(mTaskList);
         mRecyclerView.setAdapter(mTaskAdapter);
@@ -126,7 +126,7 @@ public class TaskListFragment extends Fragment {
                             mRecyclerView.setAdapter(mTaskAdapter);
                         }
 
-                    }else if(isRemoving()){
+                    } else if (isRemoving()) {
                         if (mTaskAdapter != null) {
                             mTaskAdapter.setTasks(mTaskList);
                             mTaskAdapter.notifyDataSetChanged();
@@ -136,11 +136,11 @@ public class TaskListFragment extends Fragment {
                         }
                     }
                 }
-            }else {
+            } else {
                 mEmptyImage.setVisibility(View.VISIBLE);
                 mEmptyText.setVisibility(View.VISIBLE);
             }
-        }else{
+        } else {
             return;
         }
 
@@ -347,11 +347,13 @@ public class TaskListFragment extends Fragment {
 
 
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull final MenuInflater inflater) {
+
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_search, menu);
+        inflater.inflate(R.menu.menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.menu_search_task);
+
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
@@ -365,12 +367,32 @@ public class TaskListFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                mTaskAdapter.getFilter().filter(newText);
+                mTaskAdapter.getFilter().filter(newText);
                 return false;
             }
         });
 
+        MenuItem logout = menu.findItem(R.id.menu_logout);
+        logout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                        .setTitle("Do You Want To Exit?")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                getActivity().startActivity(MainActivity.newIntent(getActivity()));
+
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null);
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+            }
+        });
+
     }
-
-
 }

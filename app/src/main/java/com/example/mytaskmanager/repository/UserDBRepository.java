@@ -9,12 +9,12 @@ import com.example.mytaskmanager.database.TaskDBHelper;
 import com.example.mytaskmanager.database.TaskDBSchema;
 import com.example.mytaskmanager.model.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class UserDBRepository {
+public class UserDBRepository implements Serializable {
 
     private static UserDBRepository sInstance;
 
@@ -80,6 +80,39 @@ public class UserDBRepository {
         }
     }
 
+    public User getUser(String  userName) {
+        String where = TaskDBSchema.UserTable.Cols.USERNAME + " = ?";
+        String[] whereArgs = new String[]{userName.toString()};
+
+        UserCursorWrapper userCursorWrapper = queryUserCursor(where, whereArgs);
+
+        if (userCursorWrapper == null || userCursorWrapper.getCount() == 0)
+            return null;
+
+        try {
+            userCursorWrapper.moveToFirst();
+            User user = userCursorWrapper.getUser();
+
+            return user;
+        } finally {
+            userCursorWrapper.close();
+        }
+    }
+
+    public Boolean searchUser(User user) {
+        List<User> users = getUsers();
+        String username = user.getUserName();
+        String password = user.getPassword();
+        for (int i = 0; i < users.size() ; i++) {
+            if (users.get(i).getUserName().equals(username) &&
+                    users.get(i).getPassword().equals(password)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private UserCursorWrapper queryUserCursor(String where, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 TaskDBSchema.UserTable.NAME,
@@ -94,52 +127,18 @@ public class UserDBRepository {
         return userCursorWrapper;
     }
 
-    public boolean checkUserLogin(String username, String password) {
-
-        String whereClause = TaskDBSchema.UserTable.Cols.USERNAME + " = ?" + " AND " + TaskDBSchema.UserTable.Cols.PASSWORD + " = ?";
-        String[] whereArgs = new String[]{username, password};
-
-        UserCursorWrapper userCursorWrapper = queryUserCursor(whereClause, whereArgs);
-        int count = userCursorWrapper.getCount();
-        userCursorWrapper.close();
-        return count > 0;
-
-    }
-
     public void insertUser(User user) {
         ContentValues values = getContentValues(user);
         mDatabase.insert(TaskDBSchema.UserTable.NAME, null, values);
     }
 
-    public void updateUser(User user) {
-        ContentValues values = getContentValues(user);
-        String whereClause = TaskDBSchema.UserTable.Cols.UUID + " = ?";
-        String[] whereArgs = new String[]{user.getUserID().toString()};
-        mDatabase.update(TaskDBSchema.UserTable.NAME, values, whereClause, whereArgs);
-    }
-
-    public void deleteUser(User user) {
-        String whereClause = TaskDBSchema.UserTable.Cols.UUID + " = ?";
-        String[] whereArgs = new String[]{user.getUserID().toString()};
-        mDatabase.delete(TaskDBSchema.UserTable.NAME, whereClause, whereArgs);
-    }
-
 
     private ContentValues getContentValues(User user) {
         ContentValues values = new ContentValues();
-        values.put(TaskDBSchema.UserTable.Cols.UUID, user.getUserID().toString());
+        values.put(TaskDBSchema.UserTable.Cols.UUID, user.getId().toString());
         values.put(TaskDBSchema.UserTable.Cols.USERNAME, user.getUserName());
-        values.put(TaskDBSchema.UserTable.Cols.PASSWORD, user.getUserPassword());
+        values.put(TaskDBSchema.UserTable.Cols.PASSWORD, user.getPassword());
         return values;
     }
 
-
-    public int getPosition(UUID userId) {
-        List<User> users = getUsers();
-        for (int i = 0; i < users.size(); i++) {
-            if (users.get(i).getUserID().equals(userId))
-                return i;
-        }
-        return -1;
-    }
 }

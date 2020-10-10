@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public interface IRepository extends Serializable {
+public interface ITaskRepository extends Serializable {
 
     List<Task> getTasks();
     Task getSingleTask(UUID taskId);

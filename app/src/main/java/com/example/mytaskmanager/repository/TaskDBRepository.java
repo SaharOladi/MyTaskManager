@@ -12,11 +12,10 @@ import com.example.mytaskmanager.model.Task;
 import com.example.mytaskmanager.database.TaskDBSchema.TaskTable.Cols;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class TaskDBRepository implements IRepository {
+public class TaskDBRepository implements ITaskRepository {
 
 
     private static TaskDBRepository sInstance;
