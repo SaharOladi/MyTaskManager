@@ -110,10 +110,14 @@ public class TaskListFragment extends Fragment {
 
     public void updateUI(State state) {
 
+
         if (mTaskDBRepository != null) {
+
             mTaskList = mTaskDBRepository.getTasksList(state);
+
             if (mTaskList != null) {
                 if (mTaskList.size() != 0) {
+
                     mEmptyImage.setVisibility(View.GONE);
                     mEmptyText.setVisibility(View.GONE);
 
@@ -127,7 +131,11 @@ public class TaskListFragment extends Fragment {
                         }
 
                     } else if (isRemoving()) {
-                        if (mTaskAdapter != null) {
+                        if (mTaskList.size() == 0 || mTaskList == null) {
+                            mEmptyImage.setVisibility(View.VISIBLE);
+                            mEmptyText.setVisibility(View.VISIBLE);
+                        }
+                        else if (mTaskAdapter != null) {
                             mTaskAdapter.setTasks(mTaskList);
                             mTaskAdapter.notifyDataSetChanged();
                         } else {
@@ -140,11 +148,9 @@ public class TaskListFragment extends Fragment {
                 mEmptyImage.setVisibility(View.VISIBLE);
                 mEmptyText.setVisibility(View.VISIBLE);
             }
-        } else {
-            return;
         }
-
     }
+
 
     private void findViews(View view) {
         mRecyclerView = view.findViewById(R.id.task_list_recyclerView);
@@ -264,8 +270,8 @@ public class TaskListFragment extends Fragment {
                         for (Task task : mAllTasks) {
                             if (task.getTaskTitle().toLowerCase().contains(filter) ||
                                     task.getTaskDescription().toLowerCase().contains(filter) ||
-                                    task.getJustDate().toLowerCase().contains(filter) ||
-                                    task.getJustTime().toLowerCase().contains(filter)) {
+                                    task.getJustTime().toLowerCase().contains(filter) ||
+                                    task.getJustDate().toLowerCase().contains(filter)) {
                                 filteredList.add(task);
                             }
                         }
@@ -292,6 +298,7 @@ public class TaskListFragment extends Fragment {
         }
 
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

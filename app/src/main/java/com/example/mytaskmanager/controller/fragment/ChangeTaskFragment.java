@@ -196,21 +196,20 @@ public class ChangeTaskFragment extends DialogFragment {
 
                     mTask.setTaskState(State.TODO);
                     TaskDBRepository.getInstance(getActivity()).updateTask(mTask);
-                    updateUI(state);
 
                 } else if (checkedId == mRadioButtonDoing.getId()) {
                     mRadioButtonDoing.setChecked(true);
                     mTask.setTaskState(State.DOING);
                     TaskDBRepository.getInstance(getActivity()).updateTask(mTask);
-                    updateUI(state);
 
                 } else if (checkedId == mRadioButtonDone.getId()) {
                     mRadioButtonDone.setChecked(true);
                     mTask.setTaskState(State.DONE);
                     TaskDBRepository.getInstance(getActivity()).updateTask(mTask);
-                    updateUI(state);
 
                 }
+
+                updateEditUI(state);
 
 
             }
@@ -218,7 +217,7 @@ public class ChangeTaskFragment extends DialogFragment {
     }
 
 
-    private void updateUI(State state) {
+    private void updateEditUI(State state) {
         if (getTargetFragment() instanceof TaskListFragment) {
             ((TaskListFragment) getTargetFragment()).updateUI(state);
         }
