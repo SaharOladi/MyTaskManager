@@ -8,10 +8,8 @@
 
     <TextView
         android:id="@+id/task_item_title"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="30dp"
-        android:layout_marginLeft="300dp"
-        android:layout_toRightOf="@id/task_item_image_view"
         android:padding="6dp"
         android:textColor="#000000"
         android:textSize="12sp"
@@ -21,10 +19,28 @@
         android:id="@+id/task_item_image_view"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginLeft="100dp"
+        android:layout_toRightOf="@id/task_item_title"
         android:background="#1EE5DE"
         android:gravity="center"
         android:padding="4dp"
         android:src="@drawable/ic_task_icon" />
+
+    <ImageView
+        android:id="@+id/task_item_remove"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_toRightOf="@id/task_item_image_view"
+        android:padding="4dp"
+        android:src="@drawable/ic_remove_task" />
+
+    <ImageView
+        android:id="@+id/task_item_edit"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_toRightOf="@id/task_item_remove"
+        android:padding="4dp"
+        android:src="@drawable/ic_edit_task" />
 
     <TextView
         android:id="@+id/task_item_date"

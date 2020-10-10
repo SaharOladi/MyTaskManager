@@ -46,12 +46,14 @@ public class TaskListFragment extends Fragment {
 
     public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 10;
     public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 20;
+    public static final int RESULT_CODE_DELETE_TASK_SECOND = 100;
+    public static final String EXTRA_TASK_DELETE_SECOND = "com.example.mytaskmanager.EXTRA_TASK_DELETE_SECOND";
 
 
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
     private FloatingActionButton mAddTask;
-    private ImageView mEmptyImage;
+    private ImageView mEmptyImage, mDeleteTask, mEditTask;
     private TextView mEmptyText;
 
     private Task mTask = new Task();
@@ -134,8 +136,7 @@ public class TaskListFragment extends Fragment {
                         if (mTaskList.size() == 0 || mTaskList == null) {
                             mEmptyImage.setVisibility(View.VISIBLE);
                             mEmptyText.setVisibility(View.VISIBLE);
-                        }
-                        else if (mTaskAdapter != null) {
+                        } else if (mTaskAdapter != null) {
                             mTaskAdapter.setTasks(mTaskList);
                             mTaskAdapter.notifyDataSetChanged();
                         } else {
@@ -157,6 +158,7 @@ public class TaskListFragment extends Fragment {
         mAddTask = view.findViewById(R.id.add_task_floating);
         mEmptyImage = view.findViewById(R.id.empty_task_image_view);
         mEmptyText = view.findViewById(R.id.empty_image_text);
+
     }
 
     private void setListeners() {
@@ -174,6 +176,7 @@ public class TaskListFragment extends Fragment {
 
             }
         });
+
     }
 
     private class TaskHolder extends RecyclerView.ViewHolder {
@@ -187,6 +190,8 @@ public class TaskListFragment extends Fragment {
             mTextViewTitle = itemView.findViewById(R.id.task_item_title);
             mTextViewDate = itemView.findViewById(R.id.task_item_date);
             mTextViewIcon = itemView.findViewById(R.id.task_item_image_view);
+            mDeleteTask = itemView.findViewById(R.id.task_item_remove);
+            mEditTask = itemView.findViewById(R.id.task_item_edit);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -199,6 +204,39 @@ public class TaskListFragment extends Fragment {
 
                     changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
 
+                }
+            });
+
+            mDeleteTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                            .setTitle("Do You Want to Delete Task?!")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    State state = mTask.getTaskState();
+                                    mTaskDBRepository.removeSingleTask(mTask);
+                                    updateUI(state);
+                                }
+                            })
+                            .setNegativeButton("No", null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+
+            mEditTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    ChangeTaskFragment changeTaskFragment = ChangeTaskFragment.newInstance(mTask);
+
+                    changeTaskFragment.setTargetFragment(
+                            TaskListFragment.this, REQUEST_CODE_CHANGE_TASK_FRAGMENT);
+
+                    changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
                 }
             });
         }
@@ -255,7 +293,7 @@ public class TaskListFragment extends Fragment {
         }
 
         public Filter getFilter() {
-            final List<Task> mAllTasks = mTaskList;
+            final List<Task> mAllTasks = mTaskDBRepository.getTasks();
             return new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
@@ -401,5 +439,26 @@ public class TaskListFragment extends Fragment {
             }
         });
 
+        MenuItem deleteAll = menu.findItem(R.id.menu_remove_all);
+        deleteAll.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                        .setTitle("Do You Want To Delete All Tasks?")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mTaskDBRepository.removeTasks();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null);
+
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return true;
+            }
+        });
+
     }
+
 }

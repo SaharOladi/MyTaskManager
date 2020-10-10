@@ -91,12 +91,7 @@ public class ChangeTaskFragment extends DialogFragment {
                         sendResultForEdit(mTask);
                     }
                 })
-                .setNegativeButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sendResultForDelete(mTask);
-                    }
-                })
+                .setNegativeButton(android.R.string.cancel, null)
                 .setView(view);
 
         return builder.create();
