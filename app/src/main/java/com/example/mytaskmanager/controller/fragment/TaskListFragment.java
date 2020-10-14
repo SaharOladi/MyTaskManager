@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,8 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.mytaskmanager.R;
@@ -252,9 +253,10 @@ public class TaskListFragment extends Fragment {
         }
     }
 
-    private class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
+    private class TaskAdapter extends RecyclerView.Adapter<TaskHolder> implements Filterable {
 
         private List<Task> mTasks;
+        private List<Task> mTasksSearch;
 
         public List<Task> getTasks() {
             return mTasks;
@@ -266,6 +268,9 @@ public class TaskListFragment extends Fragment {
 
         public TaskAdapter(List<Task> tasks) {
             mTasks = tasks;
+            if (tasks != null)
+                mTasksSearch = new ArrayList<>(tasks);
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -293,48 +298,44 @@ public class TaskListFragment extends Fragment {
         }
 
         public Filter getFilter() {
-            final List<Task> mAllTasks = mTaskDBRepository.getTasks();
             return new Filter() {
                 @Override
-                protected FilterResults performFiltering(CharSequence constraint) {
-
+                protected FilterResults performFiltering(CharSequence charSequence) {
                     List<Task> filteredList = new ArrayList<>();
 
-                    if (constraint == null || constraint.length() == 0) {
-                        filteredList.addAll(mAllTasks);
-
+                    if (charSequence.toString().isEmpty()) {
+                        filteredList.addAll(mTasksSearch);
                     } else {
-                        String filter = constraint.toString().toLowerCase().trim();
-                        for (Task task : mAllTasks) {
-                            if (task.getTaskTitle().toLowerCase().contains(filter) ||
-                                    task.getTaskDescription().toLowerCase().contains(filter) ||
-                                    task.getJustTime().toLowerCase().contains(filter) ||
-                                    task.getJustDate().toLowerCase().contains(filter)) {
+                        for (Task task : mTasksSearch) {
+                            if (task.getTaskTitle().toLowerCase().trim()
+                                    .contains(charSequence.toString().toLowerCase().trim()) ||
+                                    task.getTaskDescription().toLowerCase().trim()
+                                            .contains(charSequence.toString().toLowerCase().trim()) ||
+                                    task.getTaskState().toString().trim()
+                                            .contains(charSequence.toString().toLowerCase().trim()) ||
+                                    task.getJustDate().toLowerCase().trim()
+                                            .contains(charSequence.toString().toLowerCase().trim()) ||
+                                    task.getJustTime().toLowerCase().trim()
+                                            .contains(charSequence.toString().toLowerCase().trim())) {
                                 filteredList.add(task);
                             }
                         }
                     }
-
                     FilterResults results = new FilterResults();
                     results.values = filteredList;
+
                     return results;
                 }
 
                 @Override
-                @SuppressWarnings("unchecked")
-                protected void publishResults(CharSequence constraint, FilterResults results) {
+                protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                    mTasks.clear();
                     if (mTasks != null)
-                        mTasks.clear();
-                    else
-                        mTasks = new ArrayList<>();
-
-                    if (results.values != null)
-                        mTasks.addAll((Collection<? extends Task>) results.values);
+                        mTasks.addAll((Collection<? extends Task>) filterResults.values);
                     notifyDataSetChanged();
                 }
             };
         }
-
     }
 
 
@@ -398,12 +399,7 @@ public class TaskListFragment extends Fragment {
         inflater.inflate(R.menu.menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.menu_search_task);
-
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
-
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        androidx.appcompat.widget.SearchView searchView = (androidx.appcompat.widget.SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -416,6 +412,7 @@ public class TaskListFragment extends Fragment {
                 return false;
             }
         });
+
 
         MenuItem logout = menu.findItem(R.id.menu_logout);
         logout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
