@@ -329,8 +329,9 @@ public class TaskListFragment extends Fragment {
 
                 @Override
                 protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                    mTasks.clear();
                     if (mTasks != null)
+                        mTasks.clear();
+                    if (filterResults.values != null)
                         mTasks.addAll((Collection<? extends Task>) filterResults.values);
                     notifyDataSetChanged();
                 }
