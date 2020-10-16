@@ -1,8 +1,6 @@
 package com.example.mytaskmanager.controller.fragment;
 
 import android.app.AlertDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +18,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
@@ -117,38 +114,23 @@ public class TaskListFragment extends Fragment {
         if (mTaskDBRepository != null) {
 
             mTaskList = mTaskDBRepository.getTasksList(state);
-
-            if (mTaskList != null) {
-                if (mTaskList.size() != 0) {
-
-                    mEmptyImage.setVisibility(View.GONE);
-                    mEmptyText.setVisibility(View.GONE);
-
-                    if (isAdded()) {
-                        if (mTaskAdapter != null) {
-                            mTaskAdapter.setTasks(mTaskList);
-                            mTaskAdapter.notifyDataSetChanged();
-                        } else {
-                            mTaskAdapter = new TaskAdapter(mTaskList);
-                            mRecyclerView.setAdapter(mTaskAdapter);
-                        }
-
-                    } else if (isRemoving()) {
-                        if (mTaskList.size() == 0 || mTaskList == null) {
-                            mEmptyImage.setVisibility(View.VISIBLE);
-                            mEmptyText.setVisibility(View.VISIBLE);
-                        } else if (mTaskAdapter != null) {
-                            mTaskAdapter.setTasks(mTaskList);
-                            mTaskAdapter.notifyDataSetChanged();
-                        } else {
-                            mTaskAdapter = new TaskAdapter(mTaskList);
-                            mRecyclerView.setAdapter(mTaskAdapter);
-                        }
+            if (mTaskList != null || mTaskList.size() != 0) {
+                mEmptyImage.setVisibility(View.GONE);
+                mEmptyText.setVisibility(View.GONE);
+                if (isAdded()) {
+                    if (mTaskAdapter != null) {
+                        mTaskAdapter.setTasks(mTaskList);
+                        mTaskAdapter.notifyDataSetChanged();
+                    } else {
+                        mTaskAdapter = new TaskAdapter(mTaskList);
+                        mRecyclerView.setAdapter(mTaskAdapter);
                     }
+
                 }
-            } else {
-                mEmptyImage.setVisibility(View.VISIBLE);
-                mEmptyText.setVisibility(View.VISIBLE);
+                if (mTaskList == null || mTaskList.size() == 0) {
+                    mEmptyImage.setVisibility(View.VISIBLE);
+                    mEmptyText.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
@@ -337,6 +319,7 @@ public class TaskListFragment extends Fragment {
                 }
             };
         }
+
     }
 
 

@@ -138,7 +138,7 @@ public class TaskDBRepository implements ITaskRepository {
         TaskCursorWrapper taskCursorWrapper = queryTaskCursor(where, whereArgs);
 
         if (taskCursorWrapper == null || taskCursorWrapper.getCount() == 0)
-            return null;
+            return new ArrayList<>();
 
         try {
             taskCursorWrapper.moveToFirst();
@@ -151,7 +151,7 @@ public class TaskDBRepository implements ITaskRepository {
         } finally {
             taskCursorWrapper.close();
         }
-        return tasks;
+        return tasks != null ? tasks : new ArrayList<Task>();
     }
 
     @Override
