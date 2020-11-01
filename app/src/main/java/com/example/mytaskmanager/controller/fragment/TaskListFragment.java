@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ShareCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +52,7 @@ public class TaskListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
     private FloatingActionButton mAddTask;
-    private ImageView mEmptyImage, mDeleteTask, mEditTask;
+    private ImageView mEmptyImage, mDeleteTask, mEditTask, mShareTask;
     private TextView mEmptyText;
 
     private Task mTask = new Task();
@@ -170,12 +171,12 @@ public class TaskListFragment extends Fragment {
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
 
-            mTextViewTitle = itemView.findViewById(R.id.task_item_title);
-            mTextViewDate = itemView.findViewById(R.id.task_item_date);
-            mTextViewIcon = itemView.findViewById(R.id.task_item_image_view);
-            mDeleteTask = itemView.findViewById(R.id.task_item_remove);
-            mEditTask = itemView.findViewById(R.id.task_item_edit);
+            findViews(itemView);
 
+            setListeners(itemView);
+        }
+
+        private void setListeners(@NonNull View itemView) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -222,6 +223,59 @@ public class TaskListFragment extends Fragment {
                     changeTaskFragment.show(getFragmentManager(), CHANGE_TASK_FRAGMENT);
                 }
             });
+            mShareTask.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
+                            .setTitle(getResources().getString(R.string.share))
+                            .setPositiveButton(getResources().getString(R.string.yes), new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    shareReportIntent();
+                                }
+                            })
+                            .setNegativeButton(getResources().getString(R.string.no), null);
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            });
+        }
+
+        private String getReport() {
+            String title = mTask.getTaskTitle();
+            String state = mTask.getTaskState().toString();
+            String description = mTask.getTaskDescription();
+            String date = mTask.getJustDate();
+
+            String report = getString(
+                    R.string.task_report,
+                    title,
+                    description,
+                    date,
+                    state);
+
+            return report;
+        }
+
+        private void shareReportIntent() {
+            Intent intentBuilder = ShareCompat.IntentBuilder.from(getActivity())
+                    .setType("text/plain")
+                    .setText(getReport())
+                    .createChooserIntent();
+
+            if (intentBuilder.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(intentBuilder);
+            }
+        }
+
+        private void findViews(@NonNull View itemView) {
+            mTextViewTitle = itemView.findViewById(R.id.task_item_title);
+            mTextViewDate = itemView.findViewById(R.id.task_item_date);
+            mTextViewIcon = itemView.findViewById(R.id.task_item_image_view);
+            mDeleteTask = itemView.findViewById(R.id.task_item_remove);
+            mEditTask = itemView.findViewById(R.id.task_item_edit);
+            mShareTask = itemView.findViewById(R.id.task_item_share);
         }
 
         public void bindTask(Task task) {

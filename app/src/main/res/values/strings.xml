@@ -13,4 +13,13 @@
     <string name="save">Save</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
+    <string name="share">Do You Want to Share Word?!</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <string name="task_report">The task is %1$s and the description is %2$s
+                               and the date is %3$s and the state is %4$s
+    </string>
+
+
 </resources>
