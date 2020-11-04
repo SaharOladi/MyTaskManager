@@ -9,6 +9,7 @@ import com.example.mytaskmanager.database.TaskDataBase;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,17 +73,31 @@ public class TaskDBRepository implements ITaskRepository {
 
     @Override
     public void removeTasks() {
-      mTaskDao.deleteAllTask();
+        mTaskDao.deleteAllTask();
     }
 
 
     @Override
-    public void addTaskToDo(Task task) {}
+    public void addTaskToDo(Task task) {
+    }
 
     @Override
-    public void addTaskDone(Task task) {}
+    public void addTaskDone(Task task) {
+    }
 
     @Override
-    public void addTaskDoing(Task task) {}
+    public void addTaskDoing(Task task) {
+    }
+
+    @Override
+    public File getPhotoFile(Task task) {
+        // /data/data/com.example.mytaskmanager/files/
+        File photoFile = null;
+        File filesDir = mContext.getFilesDir();
+        // /data/data/com.example.mytaskmanager/files/IMG_ktui4u544nmkfuy48485.jpg
+        if (task != null && task.getPhotoFileName() != null)
+            photoFile = new File(filesDir, task.getPhotoFileName());
+        return photoFile;
+    }
 
 }

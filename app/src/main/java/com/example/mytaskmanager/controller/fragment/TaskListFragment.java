@@ -1,18 +1,26 @@
 package com.example.mytaskmanager.controller.fragment;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ShareCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,8 +38,10 @@ import com.example.mytaskmanager.controller.activity.MainActivity;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 import com.example.mytaskmanager.repository.TaskDBRepository;
+import com.example.mytaskmanager.util.PictureUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,14 +57,23 @@ public class TaskListFragment extends Fragment {
     public static final int REQUEST_CODE_TASK_DETAIL_FRAGMENT = 10;
     public static final int REQUEST_CODE_CHANGE_TASK_FRAGMENT = 20;
     public static final int RESULT_CODE_DELETE_TASK_SECOND = 100;
+    private static final int REQUEST_CODE_IMAGE_CAPTURE = 500;
+
+    public static final String TAG = "TASKLISTFRAGMENT";
+
+    public static final String AUTHORITY = "com.example.mytaskmanager.fileProvider";
     public static final String EXTRA_TASK_DELETE_SECOND = "com.example.mytaskmanager.EXTRA_TASK_DELETE_SECOND";
 
 
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
     private FloatingActionButton mAddTask;
-    private ImageView mEmptyImage, mDeleteTask, mEditTask, mShareTask;
+    private ImageView mEmptyImage, mDeleteTask, mEditTask,
+            mShareTask, mImageViewPhoto;
+    private ImageButton mImageButtonTakePicture;
     private TextView mEmptyText;
+
+    private File mPhotoFile;
 
     private Task mTask = new Task();
     private State mState;
@@ -76,12 +96,10 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setHasOptionsMenu(true);
 
         mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
-
+        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
     }
 
     @Override
@@ -92,6 +110,7 @@ public class TaskListFragment extends Fragment {
 
         findViews(view);
         initViews();
+//        updatePhotoView();
         setListeners();
 
 
@@ -170,7 +189,6 @@ public class TaskListFragment extends Fragment {
 
         public TaskHolder(@NonNull View itemView) {
             super(itemView);
-
             findViews(itemView);
 
             setListeners(itemView);
@@ -240,6 +258,53 @@ public class TaskListFragment extends Fragment {
                     dialog.show();
                 }
             });
+
+            mImageButtonTakePicture.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    takePictureIntent();
+                }
+            });
+        }
+
+        private void takePictureIntent() {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            try {
+                if (mPhotoFile != null && takePictureIntent
+                        .resolveActivity(getActivity().getPackageManager()) != null) {
+
+                    // file:///data/data/com.example.ci/files/234234234234.jpg
+                    Uri photoUri = generateUriForPhotoFile();
+
+                    grantWriteUriToAllResolvedActivities(takePictureIntent, photoUri);
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                    startActivityForResult(takePictureIntent, REQUEST_CODE_IMAGE_CAPTURE);
+                }
+            } catch (ActivityNotFoundException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        }
+
+        private void grantWriteUriToAllResolvedActivities(Intent takePictureIntent, Uri photoUri) {
+            List<ResolveInfo> activities = getActivity().getPackageManager()
+                    .queryIntentActivities(
+                            takePictureIntent,
+                            PackageManager.MATCH_DEFAULT_ONLY);
+
+            for (ResolveInfo activity : activities) {
+                getActivity().grantUriPermission(
+                        activity.activityInfo.packageName,
+                        photoUri,
+                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+        }
+
+        private Uri generateUriForPhotoFile() {
+            return FileProvider.getUriForFile(
+                    getContext(),
+                    AUTHORITY,
+                    mPhotoFile);
         }
 
         private String getReport() {
@@ -276,6 +341,10 @@ public class TaskListFragment extends Fragment {
             mDeleteTask = itemView.findViewById(R.id.task_item_remove);
             mEditTask = itemView.findViewById(R.id.task_item_edit);
             mShareTask = itemView.findViewById(R.id.task_item_share);
+            mImageViewPhoto = itemView.findViewById(R.id.img_view_photo);
+            mImageButtonTakePicture = itemView.findViewById(R.id.img_btn_take_picture);
+            mPhotoFile = mTaskDBRepository.getPhotoFile(mTask);
+
         }
 
         public void bindTask(Task task) {
@@ -408,8 +477,29 @@ public class TaskListFragment extends Fragment {
                     break;
             }
 
+        } else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
+            Uri photoUri = generateUriForPhotoFile();
+            getActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            updatePhotoView();
         }
 
+    }
+
+    private void updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile.exists())
+            return;
+
+        //this has a better memory management.
+        Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getAbsolutePath(), getActivity());
+        mImageViewPhoto.setImageBitmap(bitmap);
+    }
+
+    private Uri generateUriForPhotoFile() {
+        return FileProvider.getUriForFile(
+                getContext(),
+                AUTHORITY,
+                mPhotoFile);
     }
 
     public void updateEditUI() {

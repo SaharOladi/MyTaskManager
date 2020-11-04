@@ -116,4 +116,7 @@ public class Task implements Serializable {
         return new SimpleDateFormat("hh:mm a").format(mTaskDate);
     }
 
+    public String getPhotoFileName() {
+        return "IMG_" + getTaskID().toString() + ".jpg";
+    }
 }

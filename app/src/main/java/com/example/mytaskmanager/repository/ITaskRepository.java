@@ -3,6 +3,7 @@ package com.example.mytaskmanager.repository;
 import com.example.mytaskmanager.model.State;
 import com.example.mytaskmanager.model.Task;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -19,4 +20,7 @@ public interface ITaskRepository extends Serializable {
     void addTaskToDo(Task task);
     void addTaskDone(Task task);
     void addTaskDoing(Task task);
+    File getPhotoFile(Task task);
+
+
 }
