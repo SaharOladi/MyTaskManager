@@ -23,9 +23,11 @@ import java.util.List;
 
 public class PagerActivity extends AppCompatActivity {
 
+    public static final String EXTRA_BUNDLE_USERNAME = "com.example.mytaskmanager.extraBundleUsername";
     private TabLayout mTabLayout;
     private ViewPager2 mViewPager;
     PageAdapter mPageAdapter;
+    private String mUserName;
 
     List<State> mTaskState = new ArrayList<State>() {{
         add(State.TODO);
@@ -34,8 +36,9 @@ public class PagerActivity extends AppCompatActivity {
     }};
 
 
-    public static Intent newIntent(Context context) {
+    public static Intent newIntent(Context context, String userName) {
         Intent intent = new Intent(context, PagerActivity.class);
+        intent.putExtra(EXTRA_BUNDLE_USERNAME, userName);
         return intent;
     }
 
@@ -43,7 +46,7 @@ public class PagerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pager);
-
+        mUserName = getIntent().getStringExtra(EXTRA_BUNDLE_USERNAME);
         findViews();
         initView();
     }
@@ -86,7 +89,7 @@ public class PagerActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
-                mPageAdapter.mFragmentList.get(position).updateUI(mTaskState.get(position));
+                mPageAdapter.mFragmentList.get(position).updateUI(mTaskState.get(position),mUserName);
             }
 
         });
@@ -97,9 +100,9 @@ public class PagerActivity extends AppCompatActivity {
     private class PageAdapter extends FragmentStateAdapter {
 
         private List<TaskListFragment> mFragmentList = new ArrayList<TaskListFragment>() {{
-            add(TaskListFragment.newInstance(mTaskState.get(0)));
-            add(TaskListFragment.newInstance(mTaskState.get(1)));
-            add(TaskListFragment.newInstance(mTaskState.get(2)));
+            add(TaskListFragment.newInstance(mTaskState.get(0),mUserName));
+            add(TaskListFragment.newInstance(mTaskState.get(1),mUserName));
+            add(TaskListFragment.newInstance(mTaskState.get(2),mUserName));
         }};
 
         public PageAdapter(@NonNull FragmentActivity fragmentActivity) {
@@ -109,7 +112,7 @@ public class PagerActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            return TaskListFragment.newInstance(mTaskState.get(position));
+            return TaskListFragment.newInstance(mTaskState.get(position),mUserName);
         }
 
         @Override

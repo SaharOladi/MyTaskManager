@@ -96,6 +96,7 @@ public class TaskDetailFragment extends DialogFragment {
                         task.setTaskDescription(mTask.getTaskDescription());
                         task.setTaskState(mTask.getTaskState());
                         task.setTaskTime(mTask.getTaskDate());
+                        task.setUserName(mTask.getUserName());
                         TaskDBRepository.getInstance(getActivity()).removeSingleTask(mTask);
                         sendResult(task);
                     }

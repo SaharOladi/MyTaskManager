@@ -49,9 +49,12 @@ public class UserDBRepository implements Serializable {
         return mUserDAO.getUserName(userName);
     }
 
-
     public void insertUser(User user) {
         mUserDAO.insertUser(user);
+    }
+
+    public void deleteUser(User user) {
+        mUserDAO.deleteUser(user);
     }
 
 

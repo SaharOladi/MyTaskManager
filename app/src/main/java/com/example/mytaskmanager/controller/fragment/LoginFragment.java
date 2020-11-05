@@ -67,9 +67,17 @@ public class LoginFragment extends Fragment {
         mLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (validateUsername())
+                String username = mUsername.getText().toString().trim();
+                if (username.equals("admin") && mUserPassword.getText().toString().trim().equals("12345")) {
+                    AdminFragment adminFragment= new AdminFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, adminFragment)
+                            .addToBackStack(null)
+                            .commit();
+
+                } else if (validateUsername())
                     if (validatePassword()) {
-                        Intent intent = PagerActivity.newIntent(getActivity());
+                        Intent intent = PagerActivity.newIntent(getActivity(), username);
                         startActivity(intent);
                         getActivity().finish();
                     }

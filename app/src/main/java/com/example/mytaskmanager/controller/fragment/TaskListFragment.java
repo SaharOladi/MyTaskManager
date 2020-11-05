@@ -63,6 +63,7 @@ public class TaskListFragment extends Fragment {
 
     public static final String AUTHORITY = "com.example.mytaskmanager.fileProvider";
     public static final String EXTRA_TASK_DELETE_SECOND = "com.example.mytaskmanager.EXTRA_TASK_DELETE_SECOND";
+    public static final String ARGS_USER_NAME_FROM_LOGIN = "ARGS_USER_NAME_FROM_LOGIN";
 
 
     private RecyclerView mRecyclerView;
@@ -75,8 +76,10 @@ public class TaskListFragment extends Fragment {
 
     private File mPhotoFile;
 
-    private Task mTask = new Task();
+    private Task mTask;
     private State mState;
+    private String mUsername;
+
     private List<Task> mTaskList = new ArrayList<>();
     private TaskDBRepository mTaskDBRepository;
 
@@ -85,10 +88,11 @@ public class TaskListFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static TaskListFragment newInstance(State state) {
+    public static TaskListFragment newInstance(State state, String userName) {
         TaskListFragment fragment = new TaskListFragment();
         Bundle args = new Bundle();
         args.putSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY, state);
+        args.putSerializable(ARGS_USER_NAME_FROM_LOGIN, userName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,7 +103,9 @@ public class TaskListFragment extends Fragment {
         setHasOptionsMenu(true);
 
         mState = (State) getArguments().getSerializable(ARGS_STATE_FROM_PAGER_ACTIVITY);
-        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
+        mUsername = (String) getArguments().getSerializable(ARGS_USER_NAME_FROM_LOGIN);
+        mTask = new Task(mUsername);
+//        mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
     }
 
     @Override
@@ -120,21 +126,18 @@ public class TaskListFragment extends Fragment {
     private void initViews() {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mTaskDBRepository = TaskDBRepository.getInstance(getActivity());
-        mTaskList = mTaskDBRepository.getTasksList(mState);
+        mTaskList = mTaskDBRepository.getTasksList(mState, mUsername);
         mTaskAdapter = new TaskAdapter(mTaskList);
         mRecyclerView.setAdapter(mTaskAdapter);
 
         if (mTaskList != null)
-            updateUI(mState);
+            updateUI(mState, mUsername);
     }
 
-    public void updateUI(State state) {
-
-
+    public void updateUI(State state, String userName) {
         if (mTaskDBRepository != null) {
-
-            mTaskList = mTaskDBRepository.getTasksList(state);
-            if (mTaskList != null || mTaskList.size() != 0) {
+            mTaskList = mTaskDBRepository.getTasksList(state, userName);
+            if (mTaskList != null && mTaskList.size() != 0) {
                 mEmptyImage.setVisibility(View.GONE);
                 mEmptyText.setVisibility(View.GONE);
                 if (isAdded()) {
@@ -218,8 +221,9 @@ public class TaskListFragment extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     State state = mTask.getTaskState();
+                                    String userName = mTask.getUserName();
                                     mTaskDBRepository.removeSingleTask(mTask);
-                                    updateUI(state);
+                                    updateUI(state, userName);
                                 }
                             })
                             .setNegativeButton("No", null);
@@ -456,7 +460,7 @@ public class TaskListFragment extends Fragment {
                     (Task) data.getSerializableExtra(TaskDetailFragment.EXTRA_TASK);
 
             mTaskDBRepository.insertTask(task);
-            updateUI(mState);
+            updateUI(task.getTaskState(), task.getUserName());
         }
 
         if (requestCode == REQUEST_CODE_CHANGE_TASK_FRAGMENT) {
@@ -465,19 +469,19 @@ public class TaskListFragment extends Fragment {
                 case ChangeTaskFragment.RESULT_CODE_EDIT_TASK:
                     task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_CHANGE);
                     mTaskDBRepository.updateTask(task);
-                    updateUI(task.getTaskState());
+                    updateUI(task.getTaskState(), task.getUserName());
                     break;
                 case ChangeTaskFragment.RESULT_CODE_DELETE_TASK:
                     task = (Task) data.getSerializableExtra(ChangeTaskFragment.EXTRA_TASK_DELETE);
-                    State state = task.getTaskState();
                     mTaskDBRepository.removeSingleTask(task);
-                    updateUI(state);
+                    updateUI(task.getTaskState(), task.getUserName());
                     break;
                 default:
                     break;
             }
 
-        } else if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
+        }
+        if (requestCode == REQUEST_CODE_IMAGE_CAPTURE) {
             Uri photoUri = generateUriForPhotoFile();
             getActivity().revokeUriPermission(photoUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 

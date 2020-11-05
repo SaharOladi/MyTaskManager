@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, MainActivity.class);
-
         return intent;
     }
 

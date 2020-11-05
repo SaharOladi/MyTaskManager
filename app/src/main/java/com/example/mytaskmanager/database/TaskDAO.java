@@ -32,11 +32,15 @@ public interface TaskDAO {
     @Query("SELECT * FROM taskTable")
     List<Task> getTasks();
 
-    @Query("SELECT * FROM taskTable WHERE task_state=:state")
-    List<Task> getTaskState(State state);
+    @Query("SELECT * FROM taskTable WHERE task_state=:state and user_name=:userName")
+    List<Task> getTaskState(State state, String userName);
 
     @Query("SELECT * FROM taskTable WHERE uuid=:inputId")
     Task getTask(UUID inputId);
 
+    @Query("SELECT * FROM taskTable WHERE user_name=:userName")
+    List<Task> getUserTasks(String userName);
 
+    @Query("SELECT COUNT(task_title) FROM taskTable WHERE user_name=:userName")
+    Integer getTaskCount(String userName);
 }

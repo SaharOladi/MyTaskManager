@@ -33,4 +33,5 @@ public interface UserDAO {
 
     @Query("SELECT * FROM userTable WHERE user_name=:userName")
     User getUserName(String userName);
+
 }

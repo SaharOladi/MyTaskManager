@@ -50,6 +50,11 @@ public class TaskDBRepository implements ITaskRepository {
         return mTaskDao.getTask(taskId);
     }
 
+    @Override
+    public List<Task> getUserTasks(String userName) {
+        return mTaskDao.getUserTasks(userName);
+    }
+
 
     @Override
     public void insertTask(Task task) {
@@ -67,8 +72,8 @@ public class TaskDBRepository implements ITaskRepository {
     }
 
     @Override
-    public List<Task> getTasksList(State state) {
-        return mTaskDao.getTaskState(state);
+    public List<Task> getTasksList(State state, String userName) {
+        return mTaskDao.getTaskState(state,userName);
     }
 
     @Override
@@ -98,6 +103,11 @@ public class TaskDBRepository implements ITaskRepository {
         if (task != null && task.getPhotoFileName() != null)
             photoFile = new File(filesDir, task.getPhotoFileName());
         return photoFile;
+    }
+
+    @Override
+    public Integer getCount(String userName) {
+        return mTaskDao.getTaskCount(userName);
     }
 
 }

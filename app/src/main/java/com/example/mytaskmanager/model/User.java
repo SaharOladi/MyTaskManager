@@ -5,6 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 @Entity(tableName = "userTable")
 public class User implements Serializable {
@@ -22,6 +23,28 @@ public class User implements Serializable {
     @ColumnInfo(name = "user_password")
     private String mPassword;
 
+    public String getUserTasks() {
+        return mUserTasks;
+    }
+
+    public void setUserTasks(String userTasks) {
+        mUserTasks = userTasks;
+    }
+
+    @ColumnInfo(name = "user_task")
+    private String mUserTasks;
+
+    public Date getDate() {
+        return mDate;
+    }
+
+    public void setDate(Date date) {
+        mDate = date;
+    }
+
+    @ColumnInfo(name = "user_login")
+    private Date mDate;
+
     public void setId(UUID id) {
         mId = id;
     }
@@ -38,12 +61,26 @@ public class User implements Serializable {
         mPassword = password;
     }
 
+    public User(String userName, String password, Date date) {
+        mUserName = userName;
+        mPassword = password;
+        mDate = date;
+    }
+
     public User(UUID id) {
         mId = id;
     }
 
+    public User(UUID id, String userName, String password, Date date) {
+        mId = id;
+        mUserName = userName;
+        mPassword = password;
+        mDate = date;
+    }
+
     public User() {
         this(UUID.randomUUID());
+        mDate = new Date();
     }
 
     //Getter & Setters

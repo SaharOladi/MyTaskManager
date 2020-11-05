@@ -185,6 +185,7 @@ public class ChangeTaskFragment extends DialogFragment {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 State state = mTask.getTaskState();
+                String userName = mTask.getUserName();
 
                 if (checkedId == mRadioButtonToDo.getId()) {
                     mRadioButtonToDo.setChecked(true);
@@ -204,7 +205,7 @@ public class ChangeTaskFragment extends DialogFragment {
 
                 }
 
-                updateEditUI(state);
+                updateEditUI(state,userName);
 
 
             }
@@ -212,9 +213,9 @@ public class ChangeTaskFragment extends DialogFragment {
     }
 
 
-    private void updateEditUI(State state) {
+    private void updateEditUI(State state, String userName) {
         if (getTargetFragment() instanceof TaskListFragment) {
-            ((TaskListFragment) getTargetFragment()).updateUI(state);
+            ((TaskListFragment) getTargetFragment()).updateUI(state, userName);
         }
     }
 

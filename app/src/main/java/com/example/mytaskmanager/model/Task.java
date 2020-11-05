@@ -28,10 +28,10 @@ public class Task implements Serializable {
         this.primaryId = primaryId;
     }
 
-    @ColumnInfo(name = "task title")
+    @ColumnInfo(name = "task_title")
     private String mTaskTitle;
 
-    @ColumnInfo(name = "task description")
+    @ColumnInfo(name = "task_description")
     private String mTaskDescription;
 
     @ColumnInfo(name = "task_state")
@@ -40,6 +40,16 @@ public class Task implements Serializable {
     @ColumnInfo(name = "task_date")
     private Date mTaskDate;
 
+    @ColumnInfo(name = "user_name")
+    private String mUserName;
+
+    public String getUserName() {
+        return mUserName;
+    }
+
+    public void setUserName(String userName) {
+        mUserName = userName;
+    }
 
     public void setTaskID(UUID taskID) {
         mTaskID = taskID;
@@ -48,6 +58,31 @@ public class Task implements Serializable {
     public Task() {
         mTaskID = UUID.randomUUID();
         mTaskDate = new Date();
+    }
+
+    public Task(String username) {
+        mTaskID = UUID.randomUUID();
+        mTaskDate = new Date();
+        this.mUserName = username;
+    }
+
+    public Task(UUID taskID, String taskTitle, String taskDescription, State taskState, Date taskDate, String userName) {
+        mTaskID = taskID;
+        mTaskTitle = taskTitle;
+        mTaskDescription = taskDescription;
+        mTaskState = taskState;
+        mTaskDate = taskDate;
+        mUserName = userName;
+    }
+
+    public Task(State taskState, String userName) {
+        mTaskState = taskState;
+        mUserName = userName;
+    }
+
+    public Task(UUID taskID, String userName) {
+        mTaskID = taskID;
+        mUserName = userName;
     }
 
     public Task(UUID id, String title, String description, State state, Date date) {

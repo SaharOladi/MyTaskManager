@@ -12,15 +12,17 @@ public interface ITaskRepository extends Serializable {
 
     List<Task> getTasks();
     Task getSingleTask(UUID taskId);
+    List<Task> getUserTasks(String userName);
     void insertTask(Task task);
     void updateTask(Task task);
     void removeSingleTask(Task task);
     void removeTasks();
-    List<Task> getTasksList(State state);
+    List<Task> getTasksList(State state, String userName);
     void addTaskToDo(Task task);
     void addTaskDone(Task task);
     void addTaskDoing(Task task);
     File getPhotoFile(Task task);
+    Integer getCount(String userName);
 
 
 }
