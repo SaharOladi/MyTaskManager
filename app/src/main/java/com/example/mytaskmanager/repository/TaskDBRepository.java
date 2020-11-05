@@ -81,6 +81,11 @@ public class TaskDBRepository implements ITaskRepository {
         mTaskDao.deleteAllTask();
     }
 
+    @Override
+    public void removeTasksUser(String userName) {
+        mTaskDao.removeAllTask(userName);
+    }
+
 
     @Override
     public void addTaskToDo(Task task) {

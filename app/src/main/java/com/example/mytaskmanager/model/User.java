@@ -23,6 +23,7 @@ public class User implements Serializable {
     @ColumnInfo(name = "user_password")
     private String mPassword;
 
+
     public String getUserTasks() {
         return mUserTasks;
     }

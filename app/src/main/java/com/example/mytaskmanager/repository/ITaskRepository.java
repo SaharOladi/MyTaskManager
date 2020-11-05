@@ -17,6 +17,7 @@ public interface ITaskRepository extends Serializable {
     void updateTask(Task task);
     void removeSingleTask(Task task);
     void removeTasks();
+    void removeTasksUser(String userName);
     List<Task> getTasksList(State state, String userName);
     void addTaskToDo(Task task);
     void addTaskDone(Task task);

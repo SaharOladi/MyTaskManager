@@ -26,6 +26,9 @@ public interface TaskDAO {
     @Query("DELETE FROM taskTable")
     void deleteAllTask();
 
+    @Query("DELETE FROM taskTable WHERE user_name=:userName")
+    void removeAllTask(String userName);
+
     @Insert
     void insertTasks(Task... task);
 

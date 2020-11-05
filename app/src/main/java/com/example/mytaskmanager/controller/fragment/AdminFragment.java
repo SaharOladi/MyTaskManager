@@ -111,6 +111,7 @@ public class AdminFragment extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     mRepository.deleteUser(mUser);
+                                    mTaskRepository.removeTasksUser(mUser.getUserName());
                                     updateUI();
                                 }
                             })
